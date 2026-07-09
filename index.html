@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abaad Pricing System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>Pricing Engine</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                New Quote
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
+                Saved Quotes
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                History
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8z"/></svg>
+                Customers
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z"/></svg>
+                Reports
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Settings
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h2 id="view-title">Create New Quote</h2>
+            </div>
+            <div class="topbar-right">
+                <button class="icon-btn" id="theme-toggle" title="Toggle Dark Mode">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </button>
+                <button class="icon-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+                </button>
+                <div class="avatar">EM</div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- View 1: Service Selection -->
+            <section id="view-selection" class="view-section active">
+                <div class="view-header">
+                    <h3>Select Services</h3>
+                    <p>Choose one or multiple services to begin building the quote.</p>
+                </div>
+                <div class="services-grid" id="services-grid">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="action-footer">
+                    <button class="btn btn-primary" id="btn-start-wizard" disabled>
+                        Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- View 2: Pricing Wizard -->
+            <section id="view-wizard" class="view-section">
+                <div class="wizard-layout">
+                    <div class="wizard-form" id="wizard-form-container">
+                        <!-- Dynamic Form Fields Populated by JS -->
+                    </div>
+                    <div class="wizard-sidebar">
+                        <div class="live-price-card">
+                            <span class="label">Estimated Price</span>
+                            <h2 class="price" id="live-price">$0</h2>
+                            <p class="service-name-indicator" id="live-service-name">Service Name</p>
+                            <div class="action-footer vertical">
+                                <button class="btn btn-primary w-100" id="btn-next-step">
+                                    Next Step <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </button>
+                                <button class="btn btn-secondary w-100" id="btn-prev-step">Back</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View 3: Summary -->
+            <section id="view-summary" class="view-section">
+                <div class="view-header">
+                    <h3>Quote Summary</h3>
+                    <p>Review the configured services before generating the final quote.</p>
+                </div>
+                <div class="summary-layout">
+                    <div class="summary-items" id="summary-items-container">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="summary-totals">
+                            <div class="totals-card">
+    <div class="form-group" style="margin-bottom: 24px;">
+        <label class="form-label" style="font-size: 1.05rem;">Size of Organization</label>
+        <div class="segmented-control" style="display: grid; grid-template-columns: 1fr 1fr;">
+            <input type="radio" id="g-org-1" name="global-org" value="1" checked>
+            <label class="segment-label" for="g-org-1">Individual</label>
+            
+            <input type="radio" id="g-org-2" name="global-org" value="1.2">
+            <label class="segment-label" for="g-org-2">Startup</label>
+            
+            <input type="radio" id="g-org-3" name="global-org" value="1.5">
+            <label class="segment-label" for="g-org-3">Small Enterprise</label>
+            
+            <input type="radio" id="g-org-4" name="global-org" value="2.0">
+            <label class="segment-label" for="g-org-4">Medium Enterprise</label>
+            
+            <input type="radio" id="g-org-5" name="global-org" value="2.5">
+            <label class="segment-label" for="g-org-5">Large Enterprise</label>
+            
+            <input type="radio" id="g-org-6" name="global-org" value="3">
+            <label class="segment-label" for="g-org-6">Government</label>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <label class="form-label" style="font-size: 1.05rem; margin-bottom: 0;">Project Urgency</label>
+            <label class="toggle-control" style="padding: 0; margin: 0; border: none; width: auto; gap: 12px; background: transparent;">
+                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">Deadline Provided</span>
+                <input type="checkbox" id="g-urgency-toggle">
+                <div class="toggle-switch"></div>
+            </label>
+        </div>
+
+        <div id="urgency-slider-container" style="transition: opacity 0.2s;">
+            <label class="form-label" style="font-weight: normal; font-size: 0.9rem; color: var(--text-secondary);">
+                Days until deadline: <span class="slider-value" id="g-urgency-val" style="color: var(--text-primary); font-weight: bold;">21 Days</span>
+            </label>
+            <input type="range" class="slider-control" id="g-urgency-slider" min="1" max="24" step="1" value="21">
+            
+            <p id="g-urgency-desc" style="font-size: 0.85rem; color: var(--accent); margin-top: 12px; font-weight: 600;">
+                Fast-Track
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label" style="font-size: 1.0rem; margin-bottom: 0;">Testing Report</label>
+            <label class="toggle-control" style="padding: 0; margin: 0; border: none; width: auto; gap: 12px; background: transparent;">
+                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">Included</span>
+                <input type="checkbox" id="g-report-toggle">
+                <div class="toggle-switch"></div>
+            </label>
+        </div>
+    </div>
+
+    <div class="total-row">
+        <span>Base Services Subtotal</span>
+        <span id="summary-base-subtotal">$0</span>
+    </div>
+    <div class="total-row">
+        <span>Tax (15% VAT)</span>
+        <span id="summary-tax">$0</span>
+    </div>
+    <hr>
+    <div class="total-row grand-total">
+        <span>Grand Total</span>
+        <span id="summary-grand">$0</span>
+    </div>
+    <button class="btn btn-primary w-100 btn-large" id="btn-generate-quote">Generate Quote</button>
+    <button class="btn btn-secondary w-100" id="btn-edit-services">Edit Services</button>
+</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="confirmation-modal">
+        <div class="modal-card">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+            </div>
+            <h3>Generate Final Quote?</h3>
+            <p>This will lock the current configuration and generate a downloadable PDF for the customer.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
+                <button class="btn btn-primary" id="btn-confirm-modal">Confirm & Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+        <span>Quote generated successfully!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
