@@ -851,8 +851,8 @@ function renderSummary() {
     let exemptSubtotal = 0;
 
     // 1. Read Global Multipliers FIRST
-    const globalOrgElement = document.querySelector('input[name="global-org"]:checked');
-    const orgMultiplier = parseFloat(globalOrgElement.value);
+const globalOrgElement = document.getElementById('g-org-select');
+const orgMultiplier = parseFloat(globalOrgElement.value);
 
     // Call our helper function to update text visually and grab the math multiplier
     const urgencyMultiplier = updateUrgencyUI(); 
@@ -913,25 +913,29 @@ function renderSummary() {
         `;
     });
     
+
     // 3. Apply Math for Totals
     let adjustedSubtotal = (multipliableSubtotal * combinedMultiplier) + exemptSubtotal;
 
     // --- NEW: Documentation Toggle Logic ---
     const reportToggle = document.getElementById('g-report-toggle');
-    const reportRow = document.getElementById('summary-report-row');
-    const reportCostDisplay = document.getElementById('summary-report-cost');
     
     // Set your desired flat fee for the testing report here
     const reportFee = 750; 
 
     if (reportToggle && reportToggle.checked) {
         adjustedSubtotal += reportFee;
-        if (reportRow) {
-            reportRow.style.display = 'flex';
-            reportCostDisplay.innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(reportFee);
-        }
-    } else if (reportRow) {
-        reportRow.style.display = 'none';
+        
+        // Inject the Testing Report as a standard card in the Quote Summary
+        els.summaryItems.innerHTML += `
+            <div class="summary-card">
+                <div class="summary-card-info">
+                    <h4>Testing Report</h4>
+                    <p>Included</p>
+                </div>
+                <div class="summary-card-price">${new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(reportFee)}</div>
+            </div>
+        `;
     }
     // ---------------------------------------
 
@@ -939,7 +943,8 @@ function renderSummary() {
     const grandTotal = adjustedSubtotal + tax;
 
     // 4. Update UI Totals
-    document.getElementById('summary-base-subtotal').innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(adjustedSubtotal - (reportToggle?.checked ? reportFee : 0));
+    // The report fee is now naturally included in the adjustedSubtotal and doesn't need to be subtracted
+    document.getElementById('summary-base-subtotal').innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(adjustedSubtotal);
     document.getElementById('summary-tax').innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(tax);
     document.getElementById('summary-grand').innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(grandTotal);
 }
@@ -1048,9 +1053,7 @@ initSelectionGrid();
 updateProgress(10);
 
 // Global Listeners for Summary screen inputs
-document.getElementsByName('global-org').forEach(radio => {
-    radio.addEventListener('change', renderSummary);
-});
+document.getElementById('g-org-select').addEventListener('change', renderSummary);
 document.getElementById('g-urgency-toggle').addEventListener('change', renderSummary);
 document.getElementById('g-urgency-slider').addEventListener('input', renderSummary);
 
