@@ -286,7 +286,7 @@ const serviceSchema = {
         // Replaced confusing wave line with a Factory Building icon
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4H2v16Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',
         fields: [
-            { id: "manual-price", label: "Manual Factory Cost (SAR)", type: "slider", min: 50, max: 10000, val: 500, step: 50, multiplier: 1 },
+            { id: "manual-price", label: "JLCPCB Factory Cost (SAR)", type: "slider", min: 50, max: 10000, val: 500, step: 50, multiplier: 1 },
             { id: "profit", label: "Markup / Handling Margin", type: "segment", options: [{label: "Standard +25%", val: 1.25, default: true}, {label: "Expedited +50%", val: 1.5}, {label: "Base Price Only", val: 1}], isMultiplier: true }
         ]
     },
