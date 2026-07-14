@@ -130,25 +130,16 @@
                     <div class="summary-totals">
                         <div class="totals-card">
                             <div class="form-group summary-toggles-group">
-                                <label class="form-label text-lg">Size of Organization</label>
-                                <div class="segmented-control org-grid">
-                                    <input type="radio" id="g-org-1" name="global-org" value="1" checked>
-                                    <label class="segment-label" for="g-org-1">Individual</label>
-                                    
-                                    <input type="radio" id="g-org-2" name="global-org" value="1.2">
-                                    <label class="segment-label" for="g-org-2">Startup</label>
-                                    
-                                    <input type="radio" id="g-org-3" name="global-org" value="1.5">
-                                    <label class="segment-label" for="g-org-3">Small Enterprise</label>
-                                    
-                                    <input type="radio" id="g-org-4" name="global-org" value="2.0">
-                                    <label class="segment-label" for="g-org-4">Medium Enterprise</label>
-                                    
-                                    <input type="radio" id="g-org-5" name="global-org" value="2.5">
-                                    <label class="segment-label" for="g-org-5">Large Enterprise</label>
-                                    
-                                    <input type="radio" id="g-org-6" name="global-org" value="3">
-                                    <label class="segment-label" for="g-org-6">Government</label>
+                            <label class="form-label text-lg" for="g-org-select">Size of Organization</label>
+                                <div class="select-wrapper">
+                                    <select id="g-org-select" class="dropdown-control">
+                                        <option value="1" selected>Individual</option>
+                                        <option value="1.2">Startup</option>
+                                        <option value="1.5">Small Enterprise</option>
+                                        <option value="2.0">Medium Enterprise</option>
+                                        <option value="2.5">Large Enterprise</option>
+                                        <option value="3">Government</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -164,7 +155,7 @@
 
                                 <div id="urgency-slider-container" class="transition-container opacity-dim">
                                     <label class="form-label text-sm text-secondary">
-                                        Days until deadline: <span class="slider-value text-primary font-bold" id="g-urgency-val">21 Days</span>
+                                        Weeks until deadline: <span class="slider-value text-primary font-bold" id="g-urgency-val">21 Days</span>
                                     </label>
                                     <input type="range" class="slider-control" id="g-urgency-slider" min="1" max="24" step="1" value="21" disabled>
                                     <p id="g-urgency-desc" class="urgency-desc text-secondary">Flexible Timeline</p>
@@ -185,10 +176,6 @@
                             <div class="total-row">
                                 <span>Base Services</span>
                                 <span id="summary-base-subtotal">$0</span>
-                            </div>
-                            <div class="total-row" id="summary-report-row" style="display: none;">
-                                <span>Testing Report</span>
-                                <span id="summary-report-cost">$0</span>
                             </div>
                             <div class="total-row">
                                 <span>Tax (15% VAT)</span>
