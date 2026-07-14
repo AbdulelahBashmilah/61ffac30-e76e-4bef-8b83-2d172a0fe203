@@ -34,11 +34,26 @@ const serviceSchema = {
         fields: [
             // Electrical
             { id: "domain", label: "Engineering Domain (Choose one or multiple)", type: "checkbox-group", options: [{label: "Electrical", val: 0, default: true}, {label: "Mechanical", val: 0}, {label: "Software", val: 0}], isMultiplier: false },
-            { id: "pcb-size", label: "PCB Size", type: "segment", dependsOn: {field: "domain", values: ["Electrical"]}, options: [{label: "Under 3x3 cm", val: 1000, default: true},{label: "Under 5x5 cm", val: 800},{label: "Under 7x7 cm", val: 600},{label: "Under 9x9 cm", val: 400},{label: "Under 11x11 cm", val: 250}, {label: "Larger", val: 500}], isMultiplier: false },
+            { 
+                id: "pcb-size", 
+                label: "PCB Size", 
+                type: "range-slider", 
+                format: "dimension",
+                dependsOn: {field: "domain", values: ["Electrical"]}, 
+                min: 1, max: 60, valMin: 3, valMax: 6, step: 1, 
+                costTiers: [
+                    { maxArea: 9, cost: 1000 },   // e.g., 3x3 or smaller (Too small)
+                    { maxArea: 25, cost: 800 },   // e.g., 5x5
+                    { maxArea: 49, cost: 600 },   // e.g., 7x7
+                    { maxArea: 81, cost: 400 },   // e.g., 9x9
+                    { maxArea: 121, cost: 250 },  // e.g., 11x11 (Sweet spot)
+                    { maxArea: 225, cost: 600 },  // e.g., 15x15 (Big)
+                    { maxArea: 9999, cost: 1000 } // Larger (Too big)
+                ]
+            },
             { id: "files-elec", label: "No. File formats (Electrical)", type: "slider", dependsOn: {field: "domain", values: ["Electrical"]}, min: 1, max: 10, val: 4, step: 1, multiplier: 50 },
             { id: "sensors", label: "No. Sensors", type: "slider", dependsOn: {field: "domain", values: ["Electrical"]}, min: 0, max: 20, val: 3, step: 1, multiplier: 75 },
             { id: "actuators", label: "No. Actuators", type: "slider", dependsOn: {field: "domain", values: ["Electrical"]}, min: 0, max: 20, val: 4, step: 1, multiplier: 75 },
-            { id: "components", label: "No. Components", type: "segment", dependsOn: {field: "domain", values: ["Electrical"]}, options: [{label: "1-10", val: 100}, {label: "11-30", val: 300, default: true}, {label: "31+", val: 600}], isMultiplier: false },
             { 
                 id: "docs", label: "Datasheets & Schematics Availability", type: "segment", dependsOn: {field: "domain", values: ["Electrical"]}, 
                 options: [ {label: "Complete", val: 0}, {label: "Partial", val: 200}, {label: "Minimal", val: 400, default: true}, {label: "None", val: 700} ], 
@@ -245,11 +260,25 @@ const serviceSchema = {
         // Kept Microchip/PCB icon
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>',
         fields: [
-            { id: "pcb-size", label: "PCB Size", type: "segment", options: [{label: "Under 3x3 cm", val: 1000, default: true},{label: "Under 5x5 cm", val: 800},{label: "Under 7x7 cm", val: 600},{label: "Under 9x9 cm", val: 400},{label: "Under 11x11 cm", val: 250}, {label: "Larger", val: 500}], isMultiplier: false },
+            { 
+                id: "pcb-size", 
+                label: "PCB Size", 
+                type: "range-slider", 
+                format: "dimension",
+                min: 1, max: 60, valMin: 3, valMax: 6, step: 1, 
+                costTiers: [
+                    { maxArea: 9, cost: 1000 },
+                    { maxArea: 25, cost: 800 },
+                    { maxArea: 49, cost: 600 },
+                    { maxArea: 81, cost: 400 },
+                    { maxArea: 121, cost: 250 },
+                    { maxArea: 225, cost: 600 },
+                    { maxArea: 9999, cost: 1000 }
+                ]
+            },
             { id: "files", label: "No. File formats", type: "slider", min: 1, max: 10, val: 4, step: 1, multiplier: 50 },
             { id: "sensors", label: "No. Sensors", type: "slider", min: 0, max: 20, val: 3, step: 1, multiplier: 75 },
             { id: "actuators", label: "No. Actuators", type: "slider", min: 0, max: 20, val: 4, step: 1, multiplier: 75 },
-            { id: "components", label: "No. Components", type: "segment", options: [{label: "1-10", val: 100}, {label: "11-30", val: 300, default: true}, {label: "31+", val: 600}], isMultiplier: false }
         ]
     },
     "pcb-mfg": {
@@ -567,9 +596,14 @@ function renderWizardStep() {
                 </label>
             `;
         } else if (field.type === 'range-slider') {
+            const isDim = field.format === 'dimension';
+            const valText = isDim 
+                ? `{ ${config[field.id + '_min']} x ${config[field.id + '_max']} cm }` 
+                : `${config[field.id + '_min']} - ${config[field.id + '_max']} Lines`;
+
             formHTML += `
                 <div class="form-group">
-                    <label class="form-label">${field.label}: <span class="slider-value" id="val-${field.id}">${config[field.id + '_min']} - ${config[field.id + '_max']} Lines</span></label>
+                    <label class="form-label">${field.label}: <span class="slider-value" id="val-${field.id}">${valText}</span></label>
                     <div class="range-slider-container">
                         <div class="range-slider-track"></div>
                         <div class="range-slider-fill" id="fill-${field.id}"></div>
@@ -675,7 +709,11 @@ function renderWizardStep() {
                 fill.style.left = leftPercent + '%';
                 fill.style.width = (rightPercent - leftPercent) + '%';
 
-                valDisplay.innerText = `${minVal} - ${maxVal} Lines`;
+                // NEW LINES:
+                const isDim = field.format === 'dimension';
+                valDisplay.innerText = isDim 
+                    ? `${minVal} x ${maxVal}cm` 
+                    : `${minVal} - ${maxVal} Lines`;
 
                 state.serviceConfigs[serviceId].fields[field.id + '_min'] = minVal;
                 state.serviceConfigs[serviceId].fields[field.id + '_max'] = maxVal;
@@ -734,8 +772,22 @@ function calculateLivePrice(serviceId) {
         } else if (field.type === 'slider') {
             additions += (userVal * field.multiplier);
         } else if (field.type === 'range-slider') {
+            const minVal = config[field.id + '_min'];
             const maxVal = config[field.id + '_max'];
-            additions += (maxVal * field.multiplier);
+            
+            if (field.format === 'dimension' && field.costTiers) {
+                const area = minVal * maxVal;
+                let cost = 0;
+                for (let i = 0; i < field.costTiers.length; i++) {
+                    if (area <= field.costTiers[i].maxArea) {
+                        cost = field.costTiers[i].cost;
+                        break; // Stop at the first tier that fits the area
+                    }
+                }
+                additions += cost;
+            } else {
+                additions += (maxVal * field.multiplier); // Original HW-prog logic
+            }
         }
     });
 
@@ -834,8 +886,18 @@ function renderSummary() {
                     : f.dependsOn.values.includes(parentVal);
             })
             .map(f => {
-                const val = config[f.id];
-                return f.type === 'toggle' ? (val ? f.label : '') : val;
+                if (f.type === 'toggle') return config[f.id] ? f.label : '';
+                
+                // NEW: Handle Range Sliders correctly in the Summary
+                if (f.type === 'range-slider') {
+                    if (f.format === 'dimension') {
+                        return `{ ${config[f.id + '_min']} x ${config[f.id + '_max']} cm }`;
+                    } else {
+                        return `${config[f.id + '_min']} - ${config[f.id + '_max']} Lines`;
+                    }
+                }
+                
+                return config[f.id];
             })
             .filter(Boolean)
             .join(' • ');
