@@ -1,4 +1,3 @@
-
 const serviceSchema = {
     "rnd": {
         id: "rnd", title: "Research & Development", basePrice: 0,
