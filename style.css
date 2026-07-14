@@ -440,6 +440,55 @@ body {
     font-size: 0.95rem;
 }
 
+/* Custom Dropdown Styling */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    appearance: none; /* Removes native OS styles */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.dropdown-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Custom Dropdown Arrow */
+.select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--text-secondary);
+    pointer-events: none; /* Clicking the arrow still opens the dropdown */
+    transition: var(--transition);
+}
+
+.select-wrapper:hover::after {
+    border-top-color: var(--text-primary);
+}
+
 /* Segmented Control (Pills) */
 .segmented-control {
     display: flex;
