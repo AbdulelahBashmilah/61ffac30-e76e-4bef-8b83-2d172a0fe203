@@ -944,6 +944,48 @@ function renderSummary() {
     document.getElementById('summary-grand').innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(grandTotal);
 }
 
+
+
+
+// Mobile UI
+// 1. Grab the relevant DOM Elements
+const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+const sidebarNavLinks = document.querySelectorAll('.sidebar-nav .nav-item');
+
+// 2. Define the open and close functions
+function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+}
+
+// 3. Attach the Event Listeners
+if (mobileMenuToggle) {
+    mobileMenuToggle.addEventListener('click', openSidebar);
+}
+
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+}
+
+// Optional: Close the sidebar automatically when a navigation link is clicked on mobile
+if (sidebarNavLinks.length > 0) {
+    sidebarNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
+    });
+}
+
+
 // --- Event Listeners ---
 els.btnStartWizard.addEventListener('click', () => {
     state.wizardStepIndex = 0;
