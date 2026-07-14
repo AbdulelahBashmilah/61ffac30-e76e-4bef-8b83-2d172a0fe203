@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Abaad Pricing System</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 <span>Pricing Engine</span>
             </div>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebar-nav">
             <a href="#" class="nav-item active">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                 New Quote
@@ -52,6 +55,10 @@
         <!-- Topbar -->
         <header class="topbar">
             <div class="topbar-left">
+                <!-- Mobile Menu Button -->
+                <button class="icon-btn mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
                 <h2 id="view-title">Create New Quote</h2>
             </div>
             <div class="topbar-right">
@@ -82,7 +89,7 @@
                     <!-- Populated by JS -->
                 </div>
                 <div class="action-footer">
-                    <button class="btn btn-primary" id="btn-start-wizard" disabled>
+                    <button class="btn btn-primary btn-large w-100-mobile" id="btn-start-wizard" disabled>
                         Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </button>
                 </div>
@@ -100,10 +107,10 @@
                             <h2 class="price" id="live-price">$0</h2>
                             <p class="service-name-indicator" id="live-service-name">Service Name</p>
                             <div class="action-footer vertical">
+                                <button class="btn btn-secondary w-100" id="btn-prev-step">Back</button>
                                 <button class="btn btn-primary w-100" id="btn-next-step">
                                     Next Step <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                 </button>
-                                <button class="btn btn-secondary w-100" id="btn-prev-step">Back</button>
                             </div>
                         </div>
                     </div>
@@ -121,80 +128,80 @@
                         <!-- Populated by JS -->
                     </div>
                     <div class="summary-totals">
-                            <div class="totals-card">
-    <div class="form-group" style="margin-bottom: 24px;">
-        <label class="form-label" style="font-size: 1.05rem;">Size of Organization</label>
-        <div class="segmented-control" style="display: grid; grid-template-columns: 1fr 1fr;">
-            <input type="radio" id="g-org-1" name="global-org" value="1" checked>
-            <label class="segment-label" for="g-org-1">Individual</label>
-            
-            <input type="radio" id="g-org-2" name="global-org" value="1.2">
-            <label class="segment-label" for="g-org-2">Startup</label>
-            
-            <input type="radio" id="g-org-3" name="global-org" value="1.5">
-            <label class="segment-label" for="g-org-3">Small Enterprise</label>
-            
-            <input type="radio" id="g-org-4" name="global-org" value="2.0">
-            <label class="segment-label" for="g-org-4">Medium Enterprise</label>
-            
-            <input type="radio" id="g-org-5" name="global-org" value="2.5">
-            <label class="segment-label" for="g-org-5">Large Enterprise</label>
-            
-            <input type="radio" id="g-org-6" name="global-org" value="3">
-            <label class="segment-label" for="g-org-6">Government</label>
-        </div>
-    </div>
+                        <div class="totals-card">
+                            <div class="form-group summary-toggles-group">
+                                <label class="form-label text-lg">Size of Organization</label>
+                                <div class="segmented-control org-grid">
+                                    <input type="radio" id="g-org-1" name="global-org" value="1" checked>
+                                    <label class="segment-label" for="g-org-1">Individual</label>
+                                    
+                                    <input type="radio" id="g-org-2" name="global-org" value="1.2">
+                                    <label class="segment-label" for="g-org-2">Startup</label>
+                                    
+                                    <input type="radio" id="g-org-3" name="global-org" value="1.5">
+                                    <label class="segment-label" for="g-org-3">Small Enterprise</label>
+                                    
+                                    <input type="radio" id="g-org-4" name="global-org" value="2.0">
+                                    <label class="segment-label" for="g-org-4">Medium Enterprise</label>
+                                    
+                                    <input type="radio" id="g-org-5" name="global-org" value="2.5">
+                                    <label class="segment-label" for="g-org-5">Large Enterprise</label>
+                                    
+                                    <input type="radio" id="g-org-6" name="global-org" value="3">
+                                    <label class="segment-label" for="g-org-6">Government</label>
+                                </div>
+                            </div>
 
-    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <label class="form-label" style="font-size: 1.05rem; margin-bottom: 0;">Project Urgency</label>
-            <label class="toggle-control" style="padding: 0; margin: 0; border: none; width: auto; gap: 12px; background: transparent;">
-                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">Deadline Provided</span>
-                <input type="checkbox" id="g-urgency-toggle">
-                <div class="toggle-switch"></div>
-            </label>
-        </div>
+                            <div class="form-group summary-toggles-group border-bottom">
+                                <div class="flex-between">
+                                    <label class="form-label text-lg no-margin">Project Urgency</label>
+                                    <label class="toggle-control transparent-toggle">
+                                        <span class="text-sm weight-500">Deadline</span>
+                                        <input type="checkbox" id="g-urgency-toggle">
+                                        <div class="toggle-switch"></div>
+                                    </label>
+                                </div>
 
-        <div id="urgency-slider-container" style="transition: opacity 0.2s;">
-            <label class="form-label" style="font-weight: normal; font-size: 0.9rem; color: var(--text-secondary);">
-                Days until deadline: <span class="slider-value" id="g-urgency-val" style="color: var(--text-primary); font-weight: bold;">21 Days</span>
-            </label>
-            <input type="range" class="slider-control" id="g-urgency-slider" min="1" max="24" step="1" value="21">
-            
-            <p id="g-urgency-desc" style="font-size: 0.85rem; color: var(--accent); margin-top: 12px; font-weight: 600;">
-                Fast-Track
-            </p>
-        </div>
-    </div>
+                                <div id="urgency-slider-container" class="transition-container opacity-dim">
+                                    <label class="form-label text-sm text-secondary">
+                                        Days until deadline: <span class="slider-value text-primary font-bold" id="g-urgency-val">21 Days</span>
+                                    </label>
+                                    <input type="range" class="slider-control" id="g-urgency-slider" min="1" max="24" step="1" value="21" disabled>
+                                    <p id="g-urgency-desc" class="urgency-desc text-secondary">Flexible Timeline</p>
+                                </div>
+                            </div>
 
-    <div class="form-group" style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label class="form-label" style="font-size: 1.0rem; margin-bottom: 0;">Testing Report</label>
-            <label class="toggle-control" style="padding: 0; margin: 0; border: none; width: auto; gap: 12px; background: transparent;">
-                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">Included</span>
-                <input type="checkbox" id="g-report-toggle">
-                <div class="toggle-switch"></div>
-            </label>
-        </div>
-    </div>
+                            <div class="form-group summary-toggles-group border-bottom">
+                                <div class="flex-between">
+                                    <label class="form-label text-lg no-margin">Testing Report</label>
+                                    <label class="toggle-control transparent-toggle">
+                                        <span class="text-sm weight-500">Included</span>
+                                        <input type="checkbox" id="g-report-toggle">
+                                        <div class="toggle-switch"></div>
+                                    </label>
+                                </div>
+                            </div>
 
-    <div class="total-row">
-        <span>Base Services Subtotal</span>
-        <span id="summary-base-subtotal">$0</span>
-    </div>
-    <div class="total-row">
-        <span>Tax (15% VAT)</span>
-        <span id="summary-tax">$0</span>
-    </div>
-    <hr>
-    <div class="total-row grand-total">
-        <span>Grand Total</span>
-        <span id="summary-grand">$0</span>
-    </div>
-    <button class="btn btn-primary w-100 btn-large" id="btn-generate-quote">Generate Quote</button>
-    <button class="btn btn-secondary w-100" id="btn-edit-services">Edit Services</button>
-</div>
+                            <div class="total-row">
+                                <span>Base Services</span>
+                                <span id="summary-base-subtotal">$0</span>
+                            </div>
+                            <div class="total-row" id="summary-report-row" style="display: none;">
+                                <span>Testing Report</span>
+                                <span id="summary-report-cost">$0</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax (15% VAT)</span>
+                                <span id="summary-tax">$0</span>
+                            </div>
+                            <hr>
+                            <div class="total-row grand-total">
+                                <span>Grand Total</span>
+                                <span id="summary-grand">$0</span>
+                            </div>
+                            <button class="btn btn-primary w-100 btn-large" id="btn-generate-quote">Generate Quote</button>
+                            <button class="btn btn-secondary w-100" id="btn-edit-services">Edit Services</button>
+                        </div>
                     </div>
                 </div>
             </section>
