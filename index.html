@@ -15,32 +15,39 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                <span>Pricing Engine</span>
-            </div>
+            <a href="/" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>Pricing System</span>
+            </a>
         </div>
         <nav class="sidebar-nav" id="sidebar-nav">
-            <a href="#" class="nav-item active">
+            <a href="#" class="nav-item active" id="nav-new-quote">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                 New Quote
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" id="nav-saved-quotes">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
                 Saved Quotes
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" id="nav-history">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 History
             </a>
-            <a href="#" class="nav-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8z"/></svg>
+            <a href="#" class="nav-item" id="nav-customers">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
                 Customers
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item d-none" id="nav-reports">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z"/></svg>
                 Reports
             </a>
+    
+        <a href="#" class="nav-item d-none" id="nav-admin">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Pricing Config
+        </a>
         </nav>
         <div class="sidebar-footer">
             <a href="#" class="nav-item">
@@ -62,6 +69,18 @@
                 <h2 id="view-title">Create New Quote</h2>
             </div>
             <div class="topbar-right">
+                <select id="role-switcher" class="dropdown-control" style="width: auto; padding: 6px 12px; margin-right: 8px;">
+                    <optgroup label="Admins">
+                        <option value="admin_1" data-role="admin" data-name="Abdulelah Abdullah">Admin: Abdulelah Abdullah</option>
+                        <option value="admin_2" data-role="admin" data-name="Sultan Alamoudi">Admin: Sultan Alamoudi</option>
+                    </optgroup>
+                    <optgroup label="Employees">
+                        <option value="emp_1" data-role="employee" data-name="Rakan" selected>Employee: Rakan</option>
+                        <option value="emp_2" data-role="employee" data-name="Yousif">Employee: Yousif</option>
+                        <option value="emp_3" data-role="employee" data-name="Shahad">Employee: Shahad</option>
+                    </optgroup>
+                </select>
+                
                 <button class="icon-btn" id="theme-toggle" title="Toggle Dark Mode">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                 </button>
@@ -192,21 +211,153 @@
                     </div>
                 </div>
             </section>
+        <!-- View 4: Admin Pricing Config -->
+            <section id="view-admin" class="view-section">
+                <div class="view-header flex-between" style="align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h3>Pricing Configuration</h3>
+                        <p>Adjust the base prices and multipliers for all services globally.</p>
+                        
+                        <!-- NEW: Color Legend -->
+                        <div style="display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 14px; height: 14px; background-color: #eff6ff; border: 1px solid #60a4f7; border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Forced baseline cost (Applied to all quotes)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 14px; height: 14px; background-color: #fef2f2; border: 1px solid #fa7171; border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Multiplier</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 14px; height: 14px; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Standard SAR Addition</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-save-admin">Save Pricing Setup</button>
+                </div>
+                <div id="admin-content" class="admin-grid">
+                    <!-- Dynamically Populated by JS -->
+                </div>
+            </section>
 
-        </div>
+            <!-- View 5: Saved Quotes -->
+            <section id="view-saved" class="view-section">
+                <div class="view-header">
+                    <h3>Saved Quotes</h3>
+                    <p>Drafts that haven't been assigned an Order ID yet. You can edit them below.</p>
+                </div>
+                <div id="saved-list-container" class="admin-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- View 6: Customers -->
+            <section id="view-customers" class="view-section">
+                <div class="view-header">
+                    <h3>Customers</h3>
+                    <p>Finalized quotes assigned to a specific Order ID.</p>
+                </div>
+                <div id="customers-list-container" class="admin-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- View 7: History -->
+            <section id="view-history" class="view-section">
+                <div class="view-header">
+                    <h3>History Log</h3>
+                    <p>A chronological record of all submitted quotes, ordered by most recent.</p>
+                </div>
+                <div id="history-list-container" class="admin-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- View 8: Reports -->
+            <section id="view-reports" class="view-section">
+                <div class="view-header flex-between" style="flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h3>Employee Reports</h3>
+                        <p>Performance metrics and productivity graphs.</p>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        
+                        <!-- Employee Filter -->
+                        <select id="filter-employee" class="dropdown-control" style="width: 150px;">
+                            <option value="all">All Employees</option>
+                            <!-- The rest will be dynamically populated by JS -->
+                        </select>
+                        
+                        <select id="filter-month" class="dropdown-control" style="width: 140px;">
+                            <option value="all">All Months</option>
+                            <option value="0">January</option>
+                            <option value="1">February</option>
+                            <option value="2">March</option>
+                            <option value="3">April</option>
+                            <option value="4">May</option>
+                            <option value="5">June</option>
+                            <option value="6" selected>July</option>
+                            <option value="7">August</option>
+                            <option value="8">September</option>
+                            <option value="9">October</option>
+                            <option value="10">November</option>
+                            <option value="11">December</option>
+                        </select>
+                        <select id="filter-year" class="dropdown-control" style="width: 120px;">
+                            <option value="all">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="productivity-chart"></canvas>
+                </div>
+
+                <div id="reports-list-container" class="admin-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+        </div> <!-- End of content-area -->
     </main>
 
-    <!-- Modal -->
+    <!-- Modal 1: Generate Draft -->
     <div class="modal-overlay" id="confirmation-modal">
         <div class="modal-card">
             <div class="modal-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
             </div>
-            <h3>Generate Final Quote?</h3>
-            <p>This will lock the current configuration and generate a downloadable PDF for the customer.</p>
+            <h3>Save Quote Draft?</h3>
+            <p style="margin-bottom: 24px;">This will save your configuration to "Saved Quotes" where you can edit it later or assign an Order ID.</p>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
-                <button class="btn btn-primary" id="btn-confirm-modal">Confirm & Generate</button>
+                <button class="btn btn-primary" id="btn-confirm-modal">Save to Drafts</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Assign Order ID & Finalize -->
+    <div class="modal-overlay" id="assign-id-modal">
+        <div class="modal-card">
+            <div class="modal-icon" style="background-color: var(--accent-light); color: var(--accent);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <h3>Assign Order ID</h3>
+            <p style="color: #ef4444; font-weight: 600; margin-bottom: 12px;">Warning: No editing can be done further after this step.</p>
+            <p>Please enter the final Order ID to lock this quote and move it to Customers.</p>
+            
+            <input type="text" id="assign-order-id-input" class="dropdown-control" placeholder="Enter Order ID" style="margin-bottom: 24px; text-align: center;">
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btn-cancel-assign">Cancel</button>
+                <button class="btn btn-primary" id="btn-confirm-assign" style="background-color: var(--success); border-color: var(--success); color: white;">Confirm & Lock</button>
             </div>
         </div>
     </div>
@@ -217,6 +368,7 @@
         <span>Quote generated successfully!</span>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
