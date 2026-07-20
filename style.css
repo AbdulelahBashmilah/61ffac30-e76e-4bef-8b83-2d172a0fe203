@@ -1097,3 +1097,16 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(-8px);
 }
+
+/* --- Custom Searchable Dropdown --- */
+.searchable-option {
+    transition: var(--transition);
+    color: var(--text-primary);
+}
+.searchable-option:hover {
+    background-color: var(--primary-light);
+    color: var(--accent);
+}
+.searchable-option:last-child {
+    border-bottom: none !important;
+}
