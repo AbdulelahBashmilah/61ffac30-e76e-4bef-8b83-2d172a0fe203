@@ -93,7 +93,10 @@ const serviceSchema = {
             { id: "mcu", label: "Type of Programming", type: "segment", options: [{label: "Microcontroller", val: 1000}, {label: "Small Computer", val: 2500, default: true}], isMultiplier: false },
             { id: "sensors", label: "No. Sensors", type: "slider", min: 0, max: 20, val: 3, step: 1, multiplier: 75, unitInfo: "SAR per sensor" },
             { id: "actuators", label: "No. Actuators", type: "slider", min: 0, max: 20, val: 4, step: 1, multiplier: 75, unitInfo: "SAR per actuator" },
-            { id: "loc", label: "Estimated Lines of Code", type: "range-slider", min: 50, max: 1000, valMin: 500, valMax: 2000, step: 50, multiplier: 2 },
+            
+            // NEW: Added unitInfo to explain the Lines of Code multiplier
+            { id: "loc", label: "Estimated Lines of Code", type: "range-slider", min: 50, max: 1000, valMin: 500, valMax: 2000, step: 50, multiplier: 2, unitInfo: "SAR per maximum line of code" },
+            
             { id: "connectivity", label: "IoT / Wireless Stack", type: "toggle", val: 1200 },
             { id: "no-code-app", label: "No Coding App Included", type: "toggle", val: 1500 }
         ]
@@ -198,7 +201,8 @@ const state = {
     selectedServices: [],
     currentView: 'selection',
     wizardStepIndex: 0,
-    serviceConfigs: {}
+    serviceConfigs: {},
+    activeClient: null 
 };
 
 // NEW: Bulletproof recursive dependency checker
@@ -246,10 +250,18 @@ const els = {
     btnCancelModal: document.getElementById('btn-cancel-modal'),
     
     assignIdModal: document.getElementById('assign-id-modal'),
+    assignInputsContainer: document.getElementById('assign-inputs-container'),
     assignCustomerNameInput: document.getElementById('assign-customer-name-input'),
     assignOrderIdInput: document.getElementById('assign-order-id-input'),
+    assignModalTitle: document.getElementById('assign-modal-title'),
+    assignModalDesc: document.getElementById('assign-modal-desc'),
     btnCancelAssign: document.getElementById('btn-cancel-assign'),
     btnConfirmAssign: document.getElementById('btn-confirm-assign'),
+
+    verificationModal: document.getElementById('verification-modal'),
+    verificationMsg: document.getElementById('verification-msg'),
+    btnVerifyCancel: document.getElementById('btn-verify-cancel'),
+    btnVerifyConfirm: document.getElementById('btn-verify-confirm'),
     
     toast: document.getElementById('toast'),
     themeToggle: document.getElementById('theme-toggle'),
@@ -827,7 +839,11 @@ if (els.roleSwitcher) {
     applyRoleSettings();
 }
 
-if (els.navNewQuote) els.navNewQuote.addEventListener('click', (e) => { e.preventDefault(); switchView('selection'); });
+if (els.navNewQuote) els.navNewQuote.addEventListener('click', (e) => { 
+    e.preventDefault(); 
+    state.activeClient = null; 
+    switchView('selection'); 
+});
 if (els.navSavedQuotes) els.navSavedQuotes.addEventListener('click', (e) => { e.preventDefault(); switchView('saved'); });
 if (els.navCustomers) els.navCustomers.addEventListener('click', (e) => { e.preventDefault(); switchView('customers'); });
 if (els.navHistory) els.navHistory.addEventListener('click', (e) => { e.preventDefault(); switchView('history'); });
@@ -847,7 +863,9 @@ if (els.btnConfirmModal) {
             total: grandTotalObj.innerText,
             services: [...state.selectedServices],
             configs: JSON.parse(JSON.stringify(state.serviceConfigs)),
-            author: currentAuthor
+            author: currentAuthor,
+            customerName: state.activeClient || "General Client",
+            preAssignedOrderId: state.activeClientId || null
         };
 
         const saved = JSON.parse(localStorage.getItem('pricing_saved') || '[]');
@@ -1006,16 +1024,19 @@ function renderSavedList() {
     els.savedListContainer.innerHTML = saved.length === 0 ? '<p style="color: var(--text-secondary);">No saved drafts found.</p>' : '';
     saved.forEach(q => {
         const serviceNames = q.services.map(sId => serviceSchema[sId].title).join(', ');
+        const clientDisplay = q.customerName ? q.customerName : `Draft #${q.id.toString().slice(-4)}`;
+        
         els.savedListContainer.innerHTML += `
             <div class="admin-card">
-                <h4>Draft #${q.id.toString().slice(-4)}</h4>
+                <h4>${clientDisplay}</h4>
                 <p class="text-sm text-secondary mb-3">${q.date}</p>
                 <p class="text-sm mb-3" style="line-height: 1.5;"><strong>Services:</strong> <br>${serviceNames}</p>
                 <div class="flex-between" style="margin-top: 16px;">
                     <span class="price" style="font-weight: 700; font-size: 1.25rem;">${q.total}</span>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-secondary text-sm" onclick="editSavedQuote(${q.id})">Edit</button>
-                        <button class="btn btn-primary text-sm" onclick="openAssignIdModal(${q.id})" style="background-color: var(--success); border-color: var(--success); color: white;">Assign ID</button>
+                        <!-- NEW RED CONFIRM BUTTON -->
+                        <button class="btn btn-primary text-sm" onclick="openAssignIdModal(${q.id})" style="background-color: #ef4444; border-color: #ef4444; color: white;">Confirm Quote</button>
                     </div>
                 </div>
             </div>`;
@@ -1024,24 +1045,51 @@ function renderSavedList() {
 
 function renderCustomersList() {
     if(!els.customersListContainer) return;
-    const customers = JSON.parse(localStorage.getItem('pricing_customers') || '[]');
-    els.customersListContainer.innerHTML = customers.length === 0 ? '<p style="color: var(--text-secondary);">No customer orders found.</p>' : '';
-    customers.forEach(q => {
-        const serviceNames = q.services.map(sId => serviceSchema[sId].title).join(', ');
-        const displayName = q.customerName ? ` - ${q.customerName}` : ''; // <-- ADD THIS
-        
+    
+    // Array of immediate responsibility customers with their pre-existing IDs
+    const clients = [
+        { name: "Omar", id: "73921" },
+        { name: "Faisal", id: "48293" },
+        { name: "Nouf", id: "91023" },
+        { name: "Yasser", id: "33829" },
+        { name: "TechCorp", id: "55210" },
+        { name: "SABIC", id: "88392" }
+    ];
+    
+    els.customersListContainer.innerHTML = '';
+    
+    clients.forEach(client => {
         els.customersListContainer.innerHTML += `
-            <div class="admin-card" style="border-left: 4px solid var(--success);">
-                <h4>Order ID: ${q.orderId}${displayName}</h4> <!-- UPDATE THIS LINE -->
-                <p class="text-sm text-secondary mb-3">${q.date}</p>
-                <p class="text-sm mb-3" style="line-height: 1.5;"><strong>Services:</strong> <br>${serviceNames}</p>
-                <div class="flex-between" style="margin-top: 16px;">
-                    <span class="price" style="font-weight: 700; font-size: 1.25rem; color: var(--success);">${q.total}</span>
-                    <span style="background: var(--success); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Locked</span>
+            <div class="admin-card" style="border-left: 4px solid var(--accent); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <!-- Order ID displayed near the name -->
+                    <h4>${client.name} <span style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; margin-left: 8px;">#${client.id}</span></h4>
+                    <p class="text-sm text-secondary mb-3">Assigned Client</p>
                 </div>
+                <button class="btn btn-primary w-100" style="margin-top: 16px;" onclick="startQuoteForClient('${client.name}', '${client.id}')">Generate Quote</button>
             </div>`;
     });
 }
+
+// Function to start a quote for a specific client
+window.startQuoteForClient = function(clientName, clientId) {
+    state.activeClient = clientName; 
+    state.activeClientId = clientId; // <-- Save their specific ID
+    state.selectedServices = [];
+    state.serviceConfigs = {};
+    
+    // Reset UI
+    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+    if(els.btnStartWizard) els.btnStartWizard.disabled = true;
+    
+    switchView('selection');
+    
+    if(els.toast) {
+        els.toast.querySelector('span').innerText = `Creating quote for ${clientName}`;
+        els.toast.classList.add('show');
+        setTimeout(() => els.toast.classList.remove('show'), 3000);
+    }
+};
 
 function renderHistoryList() {
     if(!els.historyListContainer) return;
@@ -1098,7 +1146,21 @@ window.editSavedQuote = function(id) {
 let activeAssignId = null;
 window.openAssignIdModal = function(id) {
     activeAssignId = id;
-    if(els.assignCustomerNameInput) els.assignCustomerNameInput.value = '';
+    const saved = JSON.parse(localStorage.getItem('pricing_saved') || '[]');
+    const q = saved.find(item => item.id === id);
+    
+    if (q) {
+        if (q.customerName === "General Client") {
+            // General Client: Show the input field
+            if (els.assignOrderIdInput) els.assignOrderIdInput.style.display = 'block';
+            if (els.assignModalDesc) els.assignModalDesc.innerText = "Please enter the Order ID to finalize this quote.";
+        } else {
+            // Assigned Client: Hide the input field (automatic processing)
+            if (els.assignOrderIdInput) els.assignOrderIdInput.style.display = 'none';
+            if (els.assignModalDesc) els.assignModalDesc.innerText = "No further editing is going to be allowed and it's sent and uploaded to client.";
+        }
+    }
+    
     if(els.assignOrderIdInput) els.assignOrderIdInput.value = ''; 
     if(els.assignIdModal) els.assignIdModal.classList.add('active');
 };
@@ -1108,25 +1170,57 @@ if (els.btnCancelAssign) els.btnCancelAssign.addEventListener('click', () => {
     activeAssignId = null;
 });
 
+// Variable to hold the name until confirmed
+// Variable to hold the name until confirmed
+let tempGeneratedName = null;
+
 if (els.btnConfirmAssign) els.btnConfirmAssign.addEventListener('click', () => {
-    let orderId = els.assignOrderIdInput ? els.assignOrderIdInput.value.trim() : '';
-    
-    // Always generate a random Customer Name behind the scenes
-    const randomCustomers = ["TechCorp", "Alpha Industries", "Nexus Dynamics", "Global Solutions", "Aramco", "SABIC", "Innovate LLC"];
-    const customerName = randomCustomers[Math.floor(Math.random() * randomCustomers.length)];
-
-    // Generate a random Order ID if the input is left blank
-    if (!orderId) {
-        orderId = 'ORD-' + Math.floor(10000 + Math.random() * 90000); 
-    }
-
     const saved = JSON.parse(localStorage.getItem('pricing_saved') || '[]');
     const quoteIndex = saved.findIndex(q => q.id === activeAssignId);
     
     if (quoteIndex > -1) {
         const q = saved[quoteIndex];
-        q.customerName = customerName; 
-        q.orderId = orderId; 
+        let inputId = '';
+        
+        // 1. Process based on Client Type
+        if (q.customerName === "General Client") {
+            // General Client requires manual Order ID
+            inputId = els.assignOrderIdInput ? els.assignOrderIdInput.value.trim() : '';
+            if (!inputId) {
+                alert("Please enter a valid Order ID.");
+                return;
+            }
+            
+            // Simulate DB fetch for name
+            const dbNames = ["Ahmed Salman", "Faisal Al-Otaibi", "Sara Khalid", "Mohammed Al-Dosari", "Nouf Abdullah", "Yasser Hassan", "Layla Ali"];
+            tempGeneratedName = dbNames[Math.floor(Math.random() * dbNames.length)];
+        } else {
+            // Assigned Client uses their pre-existing Order ID
+            inputId = q.preAssignedOrderId || ('Order ID: ' + Math.floor(10000 + Math.random() * 90000));
+            tempGeneratedName = q.customerName; 
+        }
+
+        // 2. Update the message and show the verification popup
+        if(els.verificationMsg) els.verificationMsg.innerText = `The quote is going to be assigned to "${tempGeneratedName}".`;
+        if(els.assignIdModal) els.assignIdModal.classList.remove('active');
+        if(els.verificationModal) els.verificationModal.classList.add('active');
+        
+        // 3. Store Order ID temporarily and save
+        q.tempOrderId = inputId; 
+        localStorage.setItem('pricing_saved', JSON.stringify(saved)); 
+    }
+});
+
+// THIS IS THE MISSING BLOCK THAT FINALIZES THE VERIFICATION
+if (els.btnVerifyConfirm) els.btnVerifyConfirm.addEventListener('click', () => {
+    const saved = JSON.parse(localStorage.getItem('pricing_saved') || '[]');
+    const quoteIndex = saved.findIndex(item => item.id === activeAssignId);
+
+    if (quoteIndex > -1) {
+        const q = saved[quoteIndex];
+        
+        q.customerName = tempGeneratedName; // Apply the generated name
+        q.orderId = q.tempOrderId;          // Apply the stored ID
         q.submittedAt = Date.now(); 
         
         const customers = JSON.parse(localStorage.getItem('pricing_customers') || '[]');
@@ -1136,16 +1230,29 @@ if (els.btnConfirmAssign) els.btnConfirmAssign.addEventListener('click', () => {
         saved.splice(quoteIndex, 1);
         localStorage.setItem('pricing_saved', JSON.stringify(saved));
         
-        if(els.assignIdModal) els.assignIdModal.classList.remove('active');
-        activeAssignId = null;
+        if(els.verificationModal) els.verificationModal.classList.remove('active');
         
         if(els.toast) {
-            els.toast.querySelector('span').innerText = `Quote locked for ${customerName}!`;
+            els.toast.querySelector('span').innerText = `Quote ${q.orderId} finalized for ${tempGeneratedName}!`;
             els.toast.classList.add('show');
             setTimeout(() => els.toast.classList.remove('show'), 3000);
         }
-        switchView('customers');
+        
+        // Reset state
+        activeAssignId = null;
+        state.activeClient = null;
+        state.activeClientId = null;
+        tempGeneratedName = null;
+        
+        switchView('history');
+    } else {
+        alert("Error: Could not locate the draft to finalize.");
     }
+});
+
+// Cancel Logic
+if (els.btnVerifyCancel) els.btnVerifyCancel.addEventListener('click', () => {
+    if(els.verificationModal) els.verificationModal.classList.remove('active');
 });
 
 if (els.filterMonth) els.filterMonth.addEventListener('change', renderReportsList);
@@ -1229,7 +1336,7 @@ function renderReportsList() {
         const nameParts = author.split(' ');
         const initials = nameParts.length > 1 ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase() : author.substring(0, 2).toUpperCase();
         
-        const adminNames = ['Abdulelah Abdullah', 'Sultan Alamoudi', 'Maya', 'Admin'];
+        const adminNames = ['Abdulelah Abdullah', 'Sultan Alamoudi', 'Ibrahim Alghalayini', 'Admin'];
         const avatarColor = adminNames.includes(author) ? '#ef4444' : 'var(--accent)';
         
         html += `
