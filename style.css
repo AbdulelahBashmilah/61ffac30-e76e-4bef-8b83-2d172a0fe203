@@ -98,6 +98,8 @@ body {
     flex-direction: column;
     gap: 4px;
     overflow-y: auto;
+    min-height: 0; /* Prevents items from stretching beyond the screen */
+    -webkit-overflow-scrolling: touch; /* Ensures smooth touch-scrolling on iOS */
 }
 
 .nav-item {
@@ -862,13 +864,29 @@ body {
     }
 }
 
+/* Fix for Admin Grid overflow on mobile */
 @media (max-width: 768px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%; /* Fallback for older browsers */
+        height: 100dvh; /* Adapts perfectly to mobile browser UI bars */
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 50;
+        width: 280px;
+        box-shadow: var(--shadow-lg);
+    }
+    
+
     .topbar-left h2 {
-        font-size: 1rem; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        max-width: 130px;
+        display: none; /* This hides the section name on mobile */
     }
     
     .topbar {
@@ -886,9 +904,6 @@ body {
         margin-right: 0 !important; 
     }
 
-    .topbar-left h2 {
-        font-size: 1.1rem;
-    }
 
     .sidebar {
         position: fixed;
@@ -948,7 +963,7 @@ body {
 
 .admin-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* 400px is wider than most mobile screens */
     gap: 24px;
 }
 
@@ -1147,4 +1162,27 @@ body {
 }
 .searchable-item:hover {
     background-color: var(--primary-light);
+}
+
+@media (max-width: 768px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .admin-input-group > div {
+        width: 100%;
+        justify-content: flex-end;
+    }
 }
