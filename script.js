@@ -127,11 +127,52 @@ const serviceSchema = {
         id: "3d-print", title: "3D Printing", basePrice: 0,
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
         fields: [
-            { id: "material", label: "Material", type: "segment", options: [{label: "PLA", val: 50, default: true}, {label: "PETG", val: 50}, {label: "ABS", val: 80}, {label: "ASA", val: 80}, {label: "Resin", val: 150}, {label: "Nylon", val: 150}], isMultiplier: false },            { id: "amount", label: "Total Amount of Material (g)", type: "slider", min: 10, max: 2000, val: 50, step: 10, multiplier: 1.5 },
+            { id: "material", label: "Material", type: "segment", isRate: true, options: [{label: "PLA", val: 0.15, default: true}, {label: "PETG", val: 0.18}, {label: "ABS", val: 0.20}, {label: "ASA", val: 0.25}, {label: "Resin", val: 0.40}, {label: "Nylon", val: 0.50}] },
+            { id: "amount", label: "Total Amount of Material (g)", type: "slider", min: 10, max: 2000, val: 50, step: 10, multiplierRef: "material" },
             { id: "time", label: "Total Printing time (Hours)", type: "slider", min: 1, max: 72, val: 4, step: 1, multiplier: 30 },
             { id: "qty", label: "Quantity Discount", type: "segment", options: [{label: "1-9", val: 1, default: true}, {label: "10-99", val: 0.8}, {label: "100+", val: 0.65}], isMultiplier: true },
-            { id: "postprocess", label: "Post-Processing", type: "toggle", val: 150 },
-            { id: "paint", label: "Painting / Coating", type: "toggle", val: 200 }
+            
+            // Post-Processing Section
+            { id: "postprocess", label: "Post-Processing", type: "toggle", val: 0 },
+            { 
+                id: "postprocess-type", 
+                label: "Type of Post-Processing", 
+                type: "checkbox-group", 
+                dependsOn: { field: "postprocess", values: [true] }, 
+                isRate: true, // Prevents flat addition
+                options: [
+                    {label: "Standard", val: 50, default: true}, // SAR rate per part
+                    {label: "UV & Resin Curing", val: 100}      // SAR rate per part
+                ], 
+                isMultiplier: false 
+            },
+            { 
+                id: "postprocess-parts", 
+                label: "Number of Parts to Post-Process", 
+                type: "slider", 
+                dependsOn: { field: "postprocess", values: [true] }, 
+                min: 1, 
+                max: 100, 
+                val: 1, 
+                step: 1, 
+                multiplierRef: "postprocess-type", // Dynamically pulls from selected checkbox(es)
+                unitInfo: "SAR per part" 
+            },
+
+            // Painting Section
+            { id: "paint", label: "Painting / Coating", type: "toggle", val: 0 },
+            { 
+                id: "paint-parts", 
+                label: "Number of Parts to Paint", 
+                type: "slider", 
+                dependsOn: { field: "paint", values: [true] }, 
+                min: 1, 
+                max: 100, 
+                val: 1, 
+                step: 1, 
+                multiplier: 50, 
+                unitInfo: "SAR per part" 
+            }
         ]
     },
     "pcb-design": {
@@ -577,16 +618,55 @@ function calculateLivePrice(serviceId) {
         
         if (field.type === 'segment') {
             const opt = field.options.find(o => o.label === userVal);
-            if (opt) { field.isMultiplier ? multiplier *= opt.val : additions += opt.val; }
+            if (opt) {
+                if (field.isRate) {
+                    // Do nothing natively, waiting for slider reference
+                } else if (field.isMultiplier) {
+                    multiplier *= opt.val;
+                } else {
+                    additions += opt.val;
+                }
+            }
         } else if (field.type === 'checkbox-group') {
             userVal.forEach(val => {
                 const opt = field.options.find(o => o.label === val);
-                if (opt) { field.isMultiplier ? multiplier *= opt.val : additions += opt.val; }
+                if (opt) { 
+                    if (field.isRate) {
+                        // Do nothing natively, waiting for slider reference
+                    } else if (field.isMultiplier) { 
+                        multiplier *= opt.val; 
+                    } else { 
+                        additions += opt.val; 
+                    }
+                }
             });
         } else if (field.type === 'toggle') {
             if (userVal) additions += field.val;
         } else if (field.type === 'slider') {
-            additions += (userVal * field.multiplier);
+            let currentMult = field.multiplier !== undefined ? field.multiplier : 0;
+            
+            // Allow slider to act dynamically based on a segment or checkbox-group's chosen value
+            if (field.multiplierRef) {
+                const refField = schema.fields.find(f => f.id === field.multiplierRef);
+                if (refField) {
+                    const refVal = config[field.multiplierRef];
+                    
+                    if (Array.isArray(refVal)) {
+                        // It's a checkbox-group: sum up the values of all checked options
+                        currentMult = 0; 
+                        refVal.forEach(v => {
+                            const refOpt = refField.options.find(o => o.label === v);
+                            if (refOpt) currentMult += refOpt.val;
+                        });
+                    } else {
+                        // It's a segment: get the single selected value
+                        const refOpt = refField.options.find(o => o.label === refVal);
+                        if (refOpt) currentMult = refOpt.val;
+                    }
+                }
+            }
+            
+            additions += (userVal * currentMult);
         } else if (field.type === 'range-slider') {
             const minVal = config[field.id + '_min'];
             const maxVal = config[field.id + '_max'];
@@ -605,6 +685,7 @@ function calculateLivePrice(serviceId) {
     
     if (els.livePrice) els.livePrice.innerText = new Intl.NumberFormat('en-SA', { style: 'currency', currency: 'SAR' }).format(finalPrice);
 }
+
 
 function updateUrgencyUI() {
     const urgencyToggle = document.getElementById('g-urgency-toggle');
