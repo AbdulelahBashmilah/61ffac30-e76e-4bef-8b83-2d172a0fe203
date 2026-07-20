@@ -1110,3 +1110,41 @@ body {
 .searchable-option:last-child {
     border-bottom: none !important;
 }
+
+/* --- Searchable Dropdown --- */
+.searchable-dropdown-container {
+    position: relative;
+    width: 100%;
+}
+.searchable-input {
+    cursor: text;
+}
+.searchable-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    display: none;
+}
+.searchable-list.show {
+    display: block;
+}
+.searchable-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+.searchable-item:hover {
+    background-color: var(--primary-light);
+}
