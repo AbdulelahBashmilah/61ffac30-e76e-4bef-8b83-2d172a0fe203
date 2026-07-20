@@ -55,7 +55,7 @@ body {
     color: var(--text-primary);
     display: flex;
     height: 100vh;
-    height: 100dvh; /* Mobile viewport fix */
+    height: 100dvh; 
     overflow: hidden;
 }
 
@@ -88,7 +88,7 @@ body {
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--text-primary);
-    text-decoration: none; /* Add this to prevent the link from being underlined */
+    text-decoration: none; 
 }
 
 .sidebar-nav {
@@ -204,7 +204,7 @@ body {
 }
 
 .avatar.admin {
-    background-color: #ef4444; /* A vibrant red color */
+    background-color: #ef4444;
     color: #ffffff;
 }
 
@@ -462,7 +462,7 @@ body {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    appearance: none; /* Removes native OS styles */
+    appearance: none;  
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
@@ -487,7 +487,7 @@ body {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid var(--text-secondary);
-    pointer-events: none; /* Clicking the arrow still opens the dropdown */
+    pointer-events: none;
     transition: var(--transition);
 }
 
@@ -498,7 +498,7 @@ body {
 /* Segmented Control (Pills) */
 .segmented-control {
     display: flex;
-    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    flex-wrap: wrap; 
     background-color: var(--primary-light);
     padding: 4px;
     border-radius: var(--radius-md);
@@ -586,7 +586,7 @@ body {
 }
 .slider-control::-webkit-slider-thumb {
     appearance: none;
-    width: 24px; /* Increased touch target for mobile */
+    width: 24px; 
     height: 24px;
     border-radius: 50%;
     background: var(--bg-surface);
@@ -608,7 +608,7 @@ body {
     display: flex;
     align-items: center;
     margin-top: 12px;
-    padding: 0 12px; /* Ensure thumbs don't overflow the container bounds on small screens */
+    padding: 0 12px;
 }
 .range-slider-track {
     position: absolute;
@@ -640,7 +640,7 @@ body {
 .range-slider-input::-webkit-slider-thumb {
     appearance: none;
     pointer-events: auto;
-    width: 24px; /* Enlarged Touch Targets */
+    width: 24px; 
     height: 24px;
     border-radius: 50%;
     background: var(--bg-surface);
@@ -810,26 +810,20 @@ body {
     opacity: 1;
 }
 
-/* =======================================
-   RESPONSIVE DESIGN (MOBILE-FIRST LOGIC)
-   ======================================= */
-
 @media (max-width: 1024px) {
     .wizard-layout, .summary-layout {
         grid-template-columns: 1fr;
     }
     
-    /* Live Price Card changes from sticky side column to a compact floating bottom nav */
     .live-price-card {
         position: fixed;
-        top: auto; /* <-- THIS IS THE FIX */
+        top: auto;
         bottom: 0; 
         left: 0; 
         width: 100%;
-        height: auto; /* Ensures it collapses to fit its content */
+        height: auto; 
         border-radius: 0;
         border-top: 1px solid var(--border-color);
-        /* Added safe-area-inset for modern iPhones */
         padding: 12px 24px calc(12px + env(safe-area-inset-bottom)); 
         z-index: 50;
         display: grid;
@@ -869,13 +863,12 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* 1. Prevent the title from wrapping to a second row */
     .topbar-left h2 {
         font-size: 1rem; 
         white-space: nowrap; 
         overflow: hidden; 
         text-overflow: ellipsis; 
-        max-width: 130px; /* Ensures it doesn't push the right-side icons off-screen */
+        max-width: 130px;
     }
     
     .topbar {
@@ -887,7 +880,6 @@ body {
         gap: 8px; 
     }
 
-    /* 3. Shrink the role switcher dropdown (uses !important to override inline HTML styles) */
     #role-switcher {
         padding: 4px 8px !important; 
         font-size: 0.85rem;
@@ -898,7 +890,6 @@ body {
         font-size: 1.1rem;
     }
 
-    /* Convert Sidebar to an Off-Canvas Drawer */
     .sidebar {
         position: fixed;
         top: 0;
@@ -928,7 +919,6 @@ body {
         padding: 20px;
     }
 
-    /* Standard Action Footers Stack Vertically */
     .action-footer {
         flex-direction: column;
     }
@@ -940,12 +930,11 @@ body {
 }
 
 @media (max-width: 480px) {
-    /* Full width breakdown for small screens */
     .services-grid {
         grid-template-columns: 1fr;
     }
     .org-grid {
-        grid-template-columns: 1fr; /* Stack the Organization types */
+        grid-template-columns: 1fr;
     }
     .summary-card {
         flex-direction: column;
@@ -959,7 +948,6 @@ body {
 
 .admin-grid {
     display: grid;
-    /* Increased from 320px to 360px to make the boxes wider */
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 24px;
 }
@@ -1072,13 +1060,12 @@ body {
     border-radius: 50%;
     cursor: help;
     transition: var(--transition);
-    /* margin-left removed from here! */
 }
 
 .info-tooltip svg {
     width: 12px;
     height: 12px;
-    stroke-width: 3; /* Thicker, bolder (i) */
+    stroke-width: 3; 
 }
 
 .info-tooltip:hover, .info-tooltip:active {
