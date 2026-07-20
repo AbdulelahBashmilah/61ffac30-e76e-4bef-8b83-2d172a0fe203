@@ -179,8 +179,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--radius-full);
     transition: var(--transition);
 }
@@ -191,8 +191,8 @@ body {
 }
 
 .avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-full);
     background-color: var(--accent);
     color: white;
@@ -200,7 +200,7 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .avatar.admin {
@@ -869,15 +869,31 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* Show mobile menu toggle */
-    .mobile-menu-toggle {
-        display: flex;
+    /* 1. Prevent the title from wrapping to a second row */
+    .topbar-left h2 {
+        font-size: 1rem; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        max-width: 130px; /* Ensures it doesn't push the right-side icons off-screen */
     }
     
     .topbar {
         padding: 0 16px;
         height: 64px;
     }
+
+    .topbar-right {
+        gap: 8px; 
+    }
+
+    /* 3. Shrink the role switcher dropdown (uses !important to override inline HTML styles) */
+    #role-switcher {
+        padding: 4px 8px !important; 
+        font-size: 0.85rem;
+        margin-right: 0 !important; 
+    }
+
     .topbar-left h2 {
         font-size: 1.1rem;
     }
@@ -943,7 +959,8 @@ body {
 
 .admin-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    /* Increased from 320px to 360px to make the boxes wider */
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 24px;
 }
 
