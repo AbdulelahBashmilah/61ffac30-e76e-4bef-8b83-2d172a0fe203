@@ -43,25 +43,21 @@ const serviceSchema = {
             // Mechanical
             { id: "files-mech", label: "No. File formats (Mechanical)", type: "slider", dependsOn: {field: "domain", values: ["Mechanical"]}, min: 1, max: 10, val: 3, step: 1, multiplier: 50, unitInfo: "SAR per file format" },
             
-            // UPDATED: Geometry is now standard SAR additions
             { id: "geometry", label: "Geometry Complexity", type: "segment", dependsOn: {field: "domain", values: ["Mechanical"]}, options: [{label: "Sketch", val: 0, default: true}, {label: "Standard", val: 200}, {label: "Sculpted", val: 500}, {label: "Detailed", val: 1000}], isMultiplier: false },
             
             { id: "parts", label: "No. Parts", type: "slider", dependsOn: {field: "domain", values: ["Mechanical"]}, min: 1, max: 50, val: 5, step: 1, multiplier: 80, unitInfo: "SAR per part" },
             { id: "measure", label: "No. Parts to measure", type: "slider", dependsOn: {field: "domain", values: ["Mechanical"]}, min: 0, max: 50, val: 7, step: 1, multiplier: 40, unitInfo: "SAR per measured part" },
             
-            // UPDATED: Degree of Freedom is now standard SAR additions
             { id: "dof", label: "Degree of Freedom", type: "segment", dependsOn: {field: "domain", values: ["Mechanical"]}, options: [{label: "None", val: 0, default: true}, {label: "1-2", val: 300}, {label: "3+", val: 800}], isMultiplier: false },
             
             { id: "software", label: "Software", type: "segment", dependsOn: {field: "domain", values: ["Mechanical"]}, options: [{label: "CAD", val: 200, default: true}, {label: "Other", val: 350}], isMultiplier: false },
             
-            // UPDATED: Added hideInAdmin to hide the 0 SAR toggle from the dashboard
             { id: "drawing", label: "Drawing Sheet", type: "toggle", dependsOn: {field: "domain", values: ["Mechanical"]}, val: 0, hideInAdmin: true },
             { id: "drawing-qty", label: "Number of Drawing Sheets", type: "slider", dependsOn: { field: "drawing", values: [true] }, min: 1, max: 20, val: 1, step: 1, multiplier: 150, unitInfo: "SAR per sheet" },
             
             { id: "color", label: "Color Required", type: "toggle", dependsOn: {field: "domain", values: ["Mechanical"]}, val: 100 },
             { id: "assembly", label: "Assembly Required", type: "toggle", dependsOn: {field: "domain", values: ["Mechanical"]}, val: 300 },
             
-            // UPDATED: Added hideInAdmin to hide the 0 SAR toggle from the dashboard
             { id: "render", label: "Render", type: "toggle", dependsOn: {field: "domain", values: ["Mechanical"]}, val: 0, hideInAdmin: true },
             { id: "render-qty", label: "Number of Renders", type: "slider", dependsOn: { field: "render", values: [true] }, min: 1, max: 20, val: 1, step: 1, multiplier: 200, unitInfo: "SAR per render" },
             
@@ -94,7 +90,6 @@ const serviceSchema = {
             { id: "sensors", label: "No. Sensors", type: "slider", min: 0, max: 20, val: 3, step: 1, multiplier: 75, unitInfo: "SAR per sensor" },
             { id: "actuators", label: "No. Actuators", type: "slider", min: 0, max: 20, val: 4, step: 1, multiplier: 75, unitInfo: "SAR per actuator" },
             
-            // NEW: Added unitInfo to explain the Lines of Code multiplier
             { id: "loc", label: "Estimated Lines of Code", type: "range-slider", min: 50, max: 1000, valMin: 500, valMax: 2000, step: 50, multiplier: 2, unitInfo: "SAR per maximum line of code" },
             
             { id: "connectivity", label: "IoT / Wireless Stack", type: "toggle", val: 1200 },
@@ -107,26 +102,21 @@ const serviceSchema = {
         fields: [
             { id: "files", label: "No. File formats", type: "slider", min: 1, max: 10, val: 3, step: 1, multiplier: 50, unitInfo: "SAR per file format" },
             
-            // UPDATED: Geometry matches Reverse Engineering defaults perfectly
             { id: "geometry", label: "Geometry Complexity", type: "segment", options: [{label: "Sketch", val: 0, default: true}, {label: "Standard", val: 200}, {label: "Sculpted", val: 500}, {label: "Detailed", val: 1000}], isMultiplier: false }, 
             
             { id: "parts", label: "No. Parts", type: "slider", min: 1, max: 50, val: 5, step: 1, multiplier: 80, unitInfo: "SAR per part" },
             { id: "measure", label: "No. Parts to measure", type: "slider", min: 0, max: 50, val: 7, step: 1, multiplier: 40, unitInfo: "SAR per measured part" },
             
-            // UPDATED: DOF matches Reverse Engineering defaults perfectly
             { id: "dof", label: "Degree of Freedom", type: "segment", options: [{label: "None", val: 0, default: true}, {label: "1-2", val: 300}, {label: "3+", val: 800}], isMultiplier: false }, 
             
             { id: "software", label: "Software", type: "segment", options: [{label: "CAD", val: 200, default: true}, {label: "Other", val: 350}], isMultiplier: false },
             
-            // Toggles reveal quantities perfectly
-            // UPDATED: Added hideInAdmin to hide the 0 SAR toggle from the dashboard
             { id: "drawing", label: "Drawing Sheet", type: "toggle", val: 0, hideInAdmin: true },
             { id: "drawing-qty", label: "Number of Drawing Sheets", type: "slider", dependsOn: { field: "drawing", values: [true] }, min: 1, max: 20, val: 1, step: 1, multiplier: 150, unitInfo: "SAR per sheet" },
             
             { id: "color", label: "Color Required", type: "toggle", val: 100 },
             { id: "assembly", label: "Assembly Required", type: "toggle", val: 300 },
             
-            // UPDATED: Added hideInAdmin to hide the 0 SAR toggle from the dashboard
             { id: "render", label: "Render", type: "toggle", val: 0, hideInAdmin: true },
             { id: "render-qty", label: "Number of Renders", type: "slider", dependsOn: { field: "render", values: [true] }, min: 1, max: 20, val: 1, step: 1, multiplier: 200, unitInfo: "SAR per render" },
 
@@ -168,11 +158,9 @@ const serviceSchema = {
         fields: [
             { id: "ai-approach", label: "Development Approach", type: "segment", options: [{label: "n8n", val: 2000, default: true}, {label: "Fine-Tuning", val: 7500}, {label: "Custom Model", val: 18000}], isMultiplier: false },
             
-            // New n8n specific fields
             { id: "n8n-apis", label: "Expected Number of APIs", type: "slider", dependsOn: { field: "ai-approach", values: ["n8n"] }, min: 1, max: 20, val: 2, step: 1, multiplier: 200, unitInfo: "SAR per API" },
             { id: "n8n-nodes", label: "Estimated Number of Nodes", type: "slider", dependsOn: { field: "ai-approach", values: ["n8n"] }, min: 1, max: 100, val: 10, step: 1, multiplier: 50, unitInfo: "SAR per node" },
             
-            // Rest of the existing ai-dev fields
             { id: "ai-domain", label: "Domain (Choose one or multiple)", type: "checkbox-group", options: [{label: "Computer Vision", val: 3500}, {label: "NLP / Text", val: 2500, default: true}, {label: "Predictive", val: 2500}], isMultiplier: false },
             { id: "data-status", label: "Dataset Readiness", type: "segment", options: [{label: "Ready", val: 0, default: true}, {label: "Needs Cleaning", val: 2500}, {label: "Needs Collection", val: 6000}], isMultiplier: false },
             { id: "data-size", label: "Estimated Training Data Size (GB)", type: "slider", dependsOn: { field: "ai-approach", values: ["Fine-Tuning", "Custom Model"] }, min: 1, max: 250, val: 5, step: 1, multiplier: 35 },
@@ -205,15 +193,12 @@ const state = {
     activeClient: null 
 };
 
-// NEW: Bulletproof recursive dependency checker
 function isFieldVisible(field, config, schema) {
     if (!field.dependsOn) return true;
     
-    // Check if the parent field itself is hidden
     const parentField = schema.fields.find(f => f.id === field.dependsOn.field);
     if (parentField && !isFieldVisible(parentField, config, schema)) return false;
     
-    // Check if the required value is selected
     const parentVal = config[field.dependsOn.field];
     return Array.isArray(parentVal) 
         ? field.dependsOn.values.some(v => parentVal.includes(v))
@@ -424,7 +409,6 @@ function renderWizardStep() {
     </div>`;
 
     schema.fields.forEach(field => {
-        // USE NEW RECURSIVE VISIBILITY CHECK
         if (!isFieldVisible(field, config, schema)) return; 
 
         formHTML += `<div class="form-group">`;
@@ -587,7 +571,6 @@ function calculateLivePrice(serviceId) {
     let additions = 0;
 
     schema.fields.forEach(field => {
-        // USE NEW RECURSIVE VISIBILITY CHECK
         if (!isFieldVisible(field, config, schema)) return; 
 
         const userVal = config[field.id];
@@ -795,9 +778,7 @@ initSelectionGrid();
 updateProgress(10);
 
 
-// ==========================================
-// REPORTS & ROLE SWITCHER
-// ==========================================
+// Reports & role switcher
 
 function applyRoleSettings() {
     if (!els.roleSwitcher) return { role: 'employee', name: 'Employee' };
@@ -890,7 +871,6 @@ if (els.btnConfirmModal) {
 
 // Admin Pricing Rendering & Saving
 function renderAdminField(srvId, f, fIdx) {
-    // NEW: If the field is marked to hide, skip it instantly!
     if (f.hideInAdmin) return '';
     
     let html = '';
@@ -972,7 +952,6 @@ function renderAdminDashboard() {
                     if (f.dependsOn.field === 'domain') {
                         targetGroup = f.dependsOn.values[0];
                     } else if (f.dependsOn.field === 'drawing' || f.dependsOn.field === 'render') {
-                        // NEW: Route child sliders directly into the Mechanical group
                         targetGroup = 'Mechanical';
                     }
                 }
@@ -980,12 +959,10 @@ function renderAdminDashboard() {
             });
             
             for (let [groupName, group] of Object.entries(groups)) {
-                // NEW: Hide the 'General' card completely if it has no fields inside it
                 if (group.fields.length === 0) continue; 
                 
                 html += `<div class="admin-card"><h4>${group.title}</h4>`;
                 
-                // Keep the General block free of the global Base Price as requested earlier
                 if (groupName !== 'General') {} 
                 
                 group.fields.forEach(item => html += renderAdminField(srvId, item.field, item.index));
@@ -1074,7 +1051,7 @@ function renderCustomersList() {
 // Function to start a quote for a specific client
 window.startQuoteForClient = function(clientName, clientId) {
     state.activeClient = clientName; 
-    state.activeClientId = clientId; // <-- Save their specific ID
+    state.activeClientId = clientId;
     state.selectedServices = [];
     state.serviceConfigs = {};
     
@@ -1102,7 +1079,7 @@ function renderHistoryList() {
         const formattedDate = dateObj.toLocaleDateString('en-SA');
         const formattedTime = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         const serviceNames = q.services.map(sId => serviceSchema[sId].title).join(', ');
-        const displayName = q.customerName ? ` - ${q.customerName}` : ''; // <-- ADD THIS
+        const displayName = q.customerName ? ` - ${q.customerName}` : '';
         
         els.historyListContainer.innerHTML += `
             <div class="admin-card" style="border-left: 4px solid var(--text-secondary);">
@@ -1171,7 +1148,6 @@ if (els.btnCancelAssign) els.btnCancelAssign.addEventListener('click', () => {
 });
 
 // Variable to hold the name until confirmed
-// Variable to hold the name until confirmed
 let tempGeneratedName = null;
 
 if (els.btnConfirmAssign) els.btnConfirmAssign.addEventListener('click', () => {
@@ -1211,7 +1187,6 @@ if (els.btnConfirmAssign) els.btnConfirmAssign.addEventListener('click', () => {
     }
 });
 
-// THIS IS THE MISSING BLOCK THAT FINALIZES THE VERIFICATION
 if (els.btnVerifyConfirm) els.btnVerifyConfirm.addEventListener('click', () => {
     const saved = JSON.parse(localStorage.getItem('pricing_saved') || '[]');
     const quoteIndex = saved.findIndex(item => item.id === activeAssignId);
@@ -1219,8 +1194,8 @@ if (els.btnVerifyConfirm) els.btnVerifyConfirm.addEventListener('click', () => {
     if (quoteIndex > -1) {
         const q = saved[quoteIndex];
         
-        q.customerName = tempGeneratedName; // Apply the generated name
-        q.orderId = q.tempOrderId;          // Apply the stored ID
+        q.customerName = tempGeneratedName; 
+        q.orderId = q.tempOrderId;          
         q.submittedAt = Date.now(); 
         
         const customers = JSON.parse(localStorage.getItem('pricing_customers') || '[]');
