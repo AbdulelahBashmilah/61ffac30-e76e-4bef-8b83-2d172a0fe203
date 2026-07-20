@@ -127,12 +127,13 @@ const serviceSchema = {
         id: "3d-print", title: "3D Printing", basePrice: 0,
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
         fields: [
-            // Changed type to "searchable-dropdown"
             { 
                 id: "material", 
                 label: "Material", 
                 type: "searchable-dropdown", 
                 isRate: true, 
+                unitInfo: "Cost multiplier per gram of material",
+                unitShort: "SAR",
                 options: [
                     {label: "PLA", val: 0.15, default: true}, 
                     {label: "PETG", val: 0.18}, 
@@ -146,16 +147,35 @@ const serviceSchema = {
                 ] 
             },
             { id: "amount", label: "Total Amount of Material (g)", type: "slider", min: 10, max: 2000, val: 50, step: 10, multiplierRef: "material" },
-            { id: "time", label: "Total Printing time (Hours)", type: "slider", min: 1, max: 72, val: 4, step: 1, multiplier: 30 },
-            { id: "qty", label: "Quantity Discount", type: "segment", options: [{label: "1-9", val: 1, default: true}, {label: "10-99", val: 0.8}, {label: "100+", val: 0.65}], isMultiplier: true },
+            
+            // Added unitInfo for the hover (i) icon
+            { id: "time", label: "Total Printing time (Hours)", type: "slider", min: 1, max: 72, val: 4, step: 1, multiplier: 30, unitInfo: "SAR per hour" },
+            
+            // Switched to isDiscountPercent and used whole numbers for percentages (e.g., 20 = 20% off)
+            { id: "qty", label: "Quantity Discount", type: "segment", isDiscountPercent: true, options: [{label: "1-9", val: 0, default: true}, {label: "10-99", val: 20}, {label: "100+", val: 35}] },
             
             // Post-Processing Section
-            { id: "postprocess", label: "Post-Processing", type: "toggle", val: 0 },
-            { id: "postprocess-type", label: "Type of Post-Processing", type: "checkbox-group", dependsOn: { field: "postprocess", values: [true] }, isRate: true, options: [{label: "Standard", val: 50, default: true}, {label: "UV & Resin Curing", val: 100}], isMultiplier: false },
-            { id: "postprocess-parts", label: "Number of Parts to Post-Process", type: "slider", dependsOn: { field: "postprocess", values: [true] }, min: 1, max: 100, val: 1, step: 1, multiplierRef: "postprocess-type", unitInfo: "SAR per part" },
+            // Added hideInAdmin: true to hide the 0 base-price trigger
+            { id: "postprocess", label: "Post-Processing", type: "toggle", val: 0, hideInAdmin: true },
+            { 
+                id: "postprocess-type", 
+                label: "Type of Post-Processing", 
+                type: "checkbox-group", 
+                dependsOn: { field: "postprocess", values: [true] }, 
+                isRate: true, 
+                unitInfo: "Cost rate applied per part",
+                unitShort: "SAR",
+                options: [
+                    {label: "Standard", val: 50, default: true}, 
+                    {label: "UV & Resin Curing", val: 100}
+                ], 
+                isMultiplier: false 
+            },
+            { id: "postprocess-parts", label: "Number of Parts to Post-Process", type: "slider", dependsOn: { field: "postprocess", values: [true] }, min: 1, max: 100, val: 1, step: 1, multiplierRef: "postprocess-type", unitInfo: "Parts counter" },
 
             // Painting Section
-            { id: "paint", label: "Painting / Coating", type: "toggle", val: 0 },
+            // Added hideInAdmin: true to hide the 0 base-price trigger
+            { id: "paint", label: "Painting / Coating", type: "toggle", val: 0, hideInAdmin: true },
             { id: "paint-parts", label: "Number of Parts to Paint", type: "slider", dependsOn: { field: "paint", values: [true] }, min: 1, max: 100, val: 1, step: 1, multiplier: 50, unitInfo: "SAR per part" }
         ]
     },
@@ -173,8 +193,17 @@ const serviceSchema = {
         id: "pcb-mfg", title: "PCB Manufacturing", basePrice: 0,
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4H2v16Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',
         fields: [
-            { id: "manual-price", label: "Manual Factory Cost (SAR)", type: "slider", min: 50, max: 10000, val: 500, step: 50, multiplier: 1 },
-            { id: "profit", label: "Markup / Handling Margin", type: "segment", options: [{label: "Standard +25%", val: 1.25, default: true}, {label: "Expedited +50%", val: 1.5}, {label: "Base Price Only", val: 1}], isMultiplier: true }
+            { 
+                id: "manual-price", 
+                label: "Factory Quoted Cost (SAR)", 
+                type: "number-input", 
+                val: 500, // Default starting value
+                min: 0, 
+                step: 1, 
+                multiplier: 1.25, // Admin sees this (1.25 = 25% markup)
+                unitInfo: "Markup Multiplier (e.g., 1.25 = 25% Markup, 1.5 = 50% Markup)", 
+                unitShort: "x (Markup)" 
+            }
         ]
     },
     "ai-dev": {
@@ -196,17 +225,31 @@ const serviceSchema = {
         id: "consulting", title: "Engineering Consulting", basePrice: 0,
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>',
         fields: [
-            { id: "client-type", label: "Client Type", type: "segment", options: [ {label: "Individuals", val: 1, default: true}, {label: "Companies", val: 2} ], isMultiplier: true },
-            { id: "hours", label: "Estimated Consulting Time (Hours)", type: "slider", min: 1, max: 24, val: 10, step: 1, multiplier: 250 }
+            { 
+                id: "client-type", 
+                label: "Client Type", 
+                type: "segment", 
+                isRate: true, 
+                unitInfo: "Hourly rate applied based on the type of client",
+                unitShort: "SAR",
+                options: [ 
+                    {label: "Individuals", val: 250, default: true}, 
+                    {label: "Companies", val: 500} 
+                ] 
+            },
+            { 
+                id: "hours", 
+                label: "Estimated Consulting Time (Hours)", 
+                type: "slider", 
+                min: 1, 
+                max: 24, 
+                val: 10, 
+                step: 1, 
+                multiplierRef: "client-type", // Dynamically pulls 250 or 500 based on selection
+                unitInfo: "Multiplies the hours by the client type rate" 
+            }
         ]
     },
-    "Patent": {
-        id: "Patent", title: "Patent Registration & Design", basePrice: 0,
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
-        fields: [
-            { id: "service-scope", label: "Service Package", type: "segment", options: [ {label: "Comprehensive Filing", val: 9500, default: true}, {label: "Engineering Design", val: 2500} ], isMultiplier: false }
-        ]
-    }
 };
 
 // Application State
@@ -337,7 +380,7 @@ function initDefaultConfig(serviceId) {
         if (field.type === 'segment' || field.type === 'searchable-dropdown') {
             const defaultOpt = field.options.find(o => o.default) || field.options[0];
             state.serviceConfigs[serviceId].fields[field.id] = defaultOpt.label;
-        } else if (field.type === 'slider') {
+        } else if (field.type === 'slider' || field.type === 'number-input') {
             state.serviceConfigs[serviceId].fields[field.id] = field.val;
         } else if (field.type === 'toggle') {
             state.serviceConfigs[serviceId].fields[field.id] = false; 
@@ -505,6 +548,11 @@ function renderWizardStep() {
                 <label class="form-label">${field.label}: <span class="slider-value" id="val-${field.id}">${config[field.id]}</span></label>
                 <input type="range" class="slider-control" id="${field.id}" min="${field.min}" max="${field.max}" step="${field.step}" value="${config[field.id]}">
             `;
+        } else if (field.type === 'number-input') {
+            formHTML += `
+                <label class="form-label">${field.label}</label>
+                <input type="number" class="dropdown-control" id="${field.id}" value="${config[field.id]}" min="${field.min || 0}" step="${field.step || 1}" placeholder="Enter cost...">
+            `;
         }
         formHTML += `</div>`;
     });
@@ -600,6 +648,16 @@ function renderWizardStep() {
                     calculateLivePrice(serviceId);
                 });
             }
+        } else if (field.type === 'number-input') {
+            const numInput = document.getElementById(field.id);
+            if (numInput) {
+                numInput.addEventListener('input', (e) => {
+                    let val = parseFloat(e.target.value);
+                    if (isNaN(val) || val < 0) val = 0; // Prevent invalid math
+                    state.serviceConfigs[serviceId].fields[field.id] = val;
+                    calculateLivePrice(serviceId);
+                });
+            }
         } else if (field.type === 'range-slider') {
             const minSlider = document.getElementById(`${field.id}-min`);
             const maxSlider = document.getElementById(`${field.id}-max`);
@@ -663,7 +721,8 @@ function calculateLivePrice(serviceId) {
             const opt = field.options.find(o => o.label === userVal);
             if (opt) {
                 if (field.isRate) {
-                    // Do nothing natively, waiting for slider reference
+                } else if (field.isDiscountPercent) {
+                    multiplier *= (1 - (opt.val / 100));
                 } else if (field.isMultiplier) {
                     multiplier *= opt.val;
                 } else {
@@ -675,7 +734,9 @@ function calculateLivePrice(serviceId) {
                 const opt = field.options.find(o => o.label === val);
                 if (opt) { 
                     if (field.isRate) {
-                        // Do nothing natively, waiting for slider reference
+                        // Do nothing
+                    } else if (field.isDiscountPercent) {
+                        multiplier *= (1 - (opt.val / 100));
                     } else if (field.isMultiplier) { 
                         multiplier *= opt.val; 
                     } else { 
@@ -685,7 +746,7 @@ function calculateLivePrice(serviceId) {
             });
         } else if (field.type === 'toggle') {
             if (userVal) additions += field.val;
-        } else if (field.type === 'slider') {
+        } else if (field.type === 'slider' || field.type === 'number-input') {
             let currentMult = field.multiplier !== undefined ? field.multiplier : 0;
             
             // Allow slider to act dynamically based on a segment or checkbox-group's chosen value
@@ -1006,9 +1067,12 @@ function renderAdminField(srvId, f, fIdx) {
         ? `<span class="info-tooltip" data-tooltip="${f.unitInfo}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>` 
         : '';
 
-    if (['segment', 'checkbox-group', , 'searchable-dropdown'].includes(f.type)) {
-        const colorClass = f.isMultiplier ? 'input-red' : (f.id === 'domain' ? 'input-blue' : '');
-        const suffix = f.isMultiplier ? 'x' : 'SAR'; 
+    if (['segment', 'checkbox-group', 'searchable-dropdown'].includes(f.type)) {
+        // Force the input to be red if it's a multiplier, rate, or discount
+        const colorClass = (f.isMultiplier || f.isRate || f.isDiscountPercent) ? 'input-red' : (f.id === 'domain' ? 'input-blue' : '');
+        
+        // Define the friendly suffix text
+        const suffix = f.isDiscountPercent ? '%' : (f.unitShort ? f.unitShort : (f.isMultiplier ? 'x' : 'SAR')); 
         
         f.options.forEach((opt, oIdx) => {
             html += `<div class="admin-input-group" title="${f.label}">
@@ -1016,8 +1080,9 @@ function renderAdminField(srvId, f, fIdx) {
                     ${f.label} <br><strong>(${opt.label})</strong>
                 </label>
                 <div style="display:flex; align-items:center; gap:6px;">
+                    ${infoIcon} 
                     <input type="number" class="admin-val ${colorClass}" data-path="${srvId}.fields.${fIdx}.options.${oIdx}.val" value="${opt.val}" step="0.01">
-                    <span style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); width: 28px;">${suffix}</span>
+                    <span style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); min-width: 28px; white-space: nowrap;">${suffix}</span>
                 </div>
             </div>`;
         });
@@ -1029,8 +1094,9 @@ function renderAdminField(srvId, f, fIdx) {
                 <span style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); width: 28px;">SAR</span>
             </div>
         </div>`;
-    } else if (['slider', 'range-slider'].includes(f.type)) {
+    } else if (['slider', 'range-slider', 'number-input'].includes(f.type)) {
         if (f.multiplier !== undefined) {
+            const suffix = f.unitShort ? f.unitShort : 'SAR';
             html += `<div class="admin-input-group">
                 <label style="display:flex; align-items:center; gap:6px;">Multiplier: ${f.label}</label>
                 <div style="display:flex; align-items:center; gap:6px;">
