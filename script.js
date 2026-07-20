@@ -127,52 +127,36 @@ const serviceSchema = {
         id: "3d-print", title: "3D Printing", basePrice: 0,
         icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
         fields: [
-            { id: "material", label: "Material", type: "segment", isRate: true, options: [{label: "PLA", val: 0.15, default: true}, {label: "PETG", val: 0.18}, {label: "ABS", val: 0.20}, {label: "ASA", val: 0.25}, {label: "Resin", val: 0.40}, {label: "Nylon", val: 0.50}] },
+            // Changed type to "searchable-dropdown"
+            { 
+                id: "material", 
+                label: "Material", 
+                type: "searchable-dropdown", 
+                isRate: true, 
+                options: [
+                    {label: "PLA", val: 0.15, default: true}, 
+                    {label: "PETG", val: 0.18}, 
+                    {label: "ABS", val: 0.20}, 
+                    {label: "ASA", val: 0.25}, 
+                    {label: "Resin", val: 0.40}, 
+                    {label: "Resin", val: 0.55}, 
+                    {label: "Nylon", val: 0.50},
+                    {label: "Carbon Fiber PLA", val: 0.45},
+                    {label: "TPU", val: 0.35}
+                ] 
+            },
             { id: "amount", label: "Total Amount of Material (g)", type: "slider", min: 10, max: 2000, val: 50, step: 10, multiplierRef: "material" },
             { id: "time", label: "Total Printing time (Hours)", type: "slider", min: 1, max: 72, val: 4, step: 1, multiplier: 30 },
             { id: "qty", label: "Quantity Discount", type: "segment", options: [{label: "1-9", val: 1, default: true}, {label: "10-99", val: 0.8}, {label: "100+", val: 0.65}], isMultiplier: true },
             
             // Post-Processing Section
             { id: "postprocess", label: "Post-Processing", type: "toggle", val: 0 },
-            { 
-                id: "postprocess-type", 
-                label: "Type of Post-Processing", 
-                type: "checkbox-group", 
-                dependsOn: { field: "postprocess", values: [true] }, 
-                isRate: true, // Prevents flat addition
-                options: [
-                    {label: "Standard", val: 50, default: true}, // SAR rate per part
-                    {label: "UV & Resin Curing", val: 100}      // SAR rate per part
-                ], 
-                isMultiplier: false 
-            },
-            { 
-                id: "postprocess-parts", 
-                label: "Number of Parts to Post-Process", 
-                type: "slider", 
-                dependsOn: { field: "postprocess", values: [true] }, 
-                min: 1, 
-                max: 100, 
-                val: 1, 
-                step: 1, 
-                multiplierRef: "postprocess-type", // Dynamically pulls from selected checkbox(es)
-                unitInfo: "SAR per part" 
-            },
+            { id: "postprocess-type", label: "Type of Post-Processing", type: "checkbox-group", dependsOn: { field: "postprocess", values: [true] }, isRate: true, options: [{label: "Standard", val: 50, default: true}, {label: "UV & Resin Curing", val: 100}], isMultiplier: false },
+            { id: "postprocess-parts", label: "Number of Parts to Post-Process", type: "slider", dependsOn: { field: "postprocess", values: [true] }, min: 1, max: 100, val: 1, step: 1, multiplierRef: "postprocess-type", unitInfo: "SAR per part" },
 
             // Painting Section
             { id: "paint", label: "Painting / Coating", type: "toggle", val: 0 },
-            { 
-                id: "paint-parts", 
-                label: "Number of Parts to Paint", 
-                type: "slider", 
-                dependsOn: { field: "paint", values: [true] }, 
-                min: 1, 
-                max: 100, 
-                val: 1, 
-                step: 1, 
-                multiplier: 50, 
-                unitInfo: "SAR per part" 
-            }
+            { id: "paint-parts", label: "Number of Parts to Paint", type: "slider", dependsOn: { field: "paint", values: [true] }, min: 1, max: 100, val: 1, step: 1, multiplier: 50, unitInfo: "SAR per part" }
         ]
     },
     "pcb-design": {
@@ -350,7 +334,7 @@ function initDefaultConfig(serviceId) {
     const schema = serviceSchema[serviceId];
     state.serviceConfigs[serviceId] = { price: 0, fields: {} };
     schema.fields.forEach(field => {
-        if (field.type === 'segment') {
+        if (field.type === 'segment' || field.type === 'searchable-dropdown') {
             const defaultOpt = field.options.find(o => o.default) || field.options[0];
             state.serviceConfigs[serviceId].fields[field.id] = defaultOpt.label;
         } else if (field.type === 'slider') {
@@ -468,6 +452,18 @@ function renderWizardStep() {
                 const descText = field.descriptions[currentVal] || "";
                 formHTML += `<p id="desc-${field.id}" style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">${descText}</p>`;
             }
+        } else if (field.type === 'searchable-dropdown') {
+            const currentVal = config[field.id];
+            formHTML += `
+                <div class="searchable-dropdown-container" id="container-${field.id}">
+                    <label class="form-label">${field.label}</label>
+                    <input type="text" class="dropdown-control searchable-input" id="input-${field.id}" value="${currentVal}" placeholder="Search or select..." autocomplete="off">
+                    <div class="searchable-list" id="list-${field.id}">
+            `;
+            field.options.forEach(opt => {
+                formHTML += `<div class="searchable-item" data-value="${opt.label}">${opt.label}</div>`;
+            });
+            formHTML += `</div></div>`; 
         } else if (field.type === 'checkbox-group') {
             formHTML += `<label class="form-label">${field.label}</label><div class="segmented-control" style="flex-wrap: wrap;">`;
             field.options.forEach((opt, idx) => {
@@ -530,6 +526,53 @@ function renderWizardStep() {
                 const triggersReRender = schema.fields.some(f => f.dependsOn && f.dependsOn.field === field.id);
                 triggersReRender ? renderWizardStep() : calculateLivePrice(serviceId);
             }));
+        } else if (field.type === 'searchable-dropdown') {
+            const inputEl = document.getElementById(`input-${field.id}`);
+            const listEl = document.getElementById(`list-${field.id}`);
+            const items = listEl.querySelectorAll('.searchable-item');
+
+            // Open list on click
+            inputEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.searchable-list').forEach(l => l.classList.remove('show'));
+                listEl.classList.add('show');
+            });
+
+            // Filter options on type
+            inputEl.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                listEl.classList.add('show');
+                items.forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    item.style.display = text.includes(term) ? 'block' : 'none';
+                });
+            });
+
+            // Revert invalid typing on click away
+            inputEl.addEventListener('blur', () => {
+                setTimeout(() => {
+                    const isValid = field.options.some(o => o.label === inputEl.value);
+                    if (!isValid) {
+                        inputEl.value = config[field.id]; // Reset to last saved state
+                        items.forEach(i => i.style.display = 'block'); // Unhide items
+                    }
+                }, 150);
+            });
+
+            // Select item
+            items.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = item.dataset.value;
+                    inputEl.value = val;
+                    state.serviceConfigs[serviceId].fields[field.id] = val;
+                    listEl.classList.remove('show');
+                    items.forEach(i => i.style.display = 'block');
+                    
+                    const triggersReRender = schema.fields.some(f => f.dependsOn && f.dependsOn.field === field.id);
+                    triggersReRender ? renderWizardStep() : calculateLivePrice(serviceId);
+                });
+            });
         } else if (field.type === 'checkbox-group') {
             const checkboxes = document.getElementsByName(field.id);
             checkboxes.forEach(cb => cb.addEventListener('change', () => {
@@ -616,7 +659,7 @@ function calculateLivePrice(serviceId) {
 
         const userVal = config[field.id];
         
-        if (field.type === 'segment') {
+        if (field.type === 'segment' || field.type === 'searchable-dropdown') {
             const opt = field.options.find(o => o.label === userVal);
             if (opt) {
                 if (field.isRate) {
@@ -806,6 +849,10 @@ if (els.btnStartWizard) {
     });
 }
 
+document.addEventListener('click', () => {
+    document.querySelectorAll('.searchable-list.show').forEach(list => list.classList.remove('show'));
+});
+
 if (els.btnNextStep) {
     els.btnNextStep.addEventListener('click', () => {
         if (state.wizardStepIndex < state.selectedServices.length - 1) {
@@ -959,7 +1006,7 @@ function renderAdminField(srvId, f, fIdx) {
         ? `<span class="info-tooltip" data-tooltip="${f.unitInfo}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>` 
         : '';
 
-    if (['segment', 'checkbox-group'].includes(f.type)) {
+    if (['segment', 'checkbox-group', , 'searchable-dropdown'].includes(f.type)) {
         const colorClass = f.isMultiplier ? 'input-red' : (f.id === 'domain' ? 'input-blue' : '');
         const suffix = f.isMultiplier ? 'x' : 'SAR'; 
         
