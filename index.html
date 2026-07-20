@@ -16,9 +16,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="/" class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
+                <img src="https://abaadsaudi.com/wp-content/uploads/2023/09/abaad.png" alt="Abaad Logo" height="36">
                 <span>Pricing System</span>
             </a>
         </div>
@@ -71,13 +69,14 @@
             <div class="topbar-right">
                 <select id="role-switcher" class="dropdown-control" style="width: auto; padding: 6px 12px; margin-right: 8px;">
                     <optgroup label="Admins">
-                        <option value="admin_1" data-role="admin" data-name="Abdulelah Abdullah">Admin: Abdulelah Abdullah</option>
-                        <option value="admin_2" data-role="admin" data-name="Sultan Alamoudi">Admin: Sultan Alamoudi</option>
+                        <option value="admin_1" data-role="admin" data-name="Abdulelah Abdullah">Abdulelah Abdullah</option>
+                        <option value="admin_2" data-role="admin" data-name="Sultan Alamoudi">Sultan Alamoudi</option>
+                        <option value="admin_3" data-role="admin" data-name="Ibrahim Alghalayini">Ibrahim Alghalayini</option>
                     </optgroup>
                     <optgroup label="Employees">
-                        <option value="emp_1" data-role="employee" data-name="Rakan" selected>Employee: Rakan</option>
-                        <option value="emp_2" data-role="employee" data-name="Yousif">Employee: Yousif</option>
-                        <option value="emp_3" data-role="employee" data-name="Shahad">Employee: Shahad</option>
+                        <option value="emp_1" data-role="employee" data-name="Rakan" selected>Rakan</option>
+                        <option value="emp_2" data-role="employee" data-name="Yousif">Yousif</option>
+                        <option value="emp_3" data-role="employee" data-name="Shahad">Shahad</option>
                     </optgroup>
                 </select>
                 
@@ -245,7 +244,8 @@
             <section id="view-saved" class="view-section">
                 <div class="view-header">
                     <h3>Saved Quotes</h3>
-                    <p>Drafts that haven't been assigned an Order ID yet. You can edit them below.</p>
+                    <!-- UPDATED DESCRIPTION -->
+                    <p>edit the service configurations here, or confirm them to lock the pricing and officially finalize the order.</p>
                 </div>
                 <div id="saved-list-container" class="admin-grid">
                     <!-- Populated by JS -->
@@ -255,8 +255,8 @@
             <!-- View 6: Customers -->
             <section id="view-customers" class="view-section">
                 <div class="view-header">
-                    <h3>Customers</h3>
-                    <p>Finalized quotes assigned to a specific Order ID.</p>
+                    <h3>My Assigned Clients</h3>
+                    <p>Your immediate responsibility customers. Generate a quote directly for them below.</p>
                 </div>
                 <div id="customers-list-container" class="admin-grid">
                     <!-- Populated by JS -->
@@ -343,24 +343,40 @@
         </div>
     </div>
 
-    <!-- Modal 2: Assign Order ID & Finalize -->
+    <!-- Modal 2: Confirm & Send Quote -->
     <div class="modal-overlay" id="assign-id-modal">
         <div class="modal-card">
-            <div class="modal-icon" style="background-color: var(--accent-light); color: var(--accent);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <div class="modal-icon" style="background-color: #fef2f2; color: #ef4444;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
             </div>
-            <h3>Assign Order ID</h3>
-            <p style="color: #ef4444; font-weight: 600; margin-bottom: 12px;">Warning: No editing can be done further after this step.</p>
-            <p>Please enter the final Order ID to lock this quote and move it to Customers.</p>
             
-            <input type="text" id="assign-order-id-input" class="dropdown-control" placeholder="Enter Order ID" style="margin-bottom: 24px; text-align: center;">
+            <h3 id="assign-modal-title">Confirm & Send Quote</h3>
+            <p id="assign-modal-desc" style="color: #ef4444; font-weight: 600; margin-bottom: 24px;">No further editing is going to be allowed and it's sent and uploaded to client.</p>
 
+            <!-- Only Order ID Input -->
+<!-- Only Order ID Input - Required -->
+<input type="text" id="assign-order-id-input" class="dropdown-control" placeholder="Enter Order ID" required style="margin-bottom: 24px; text-align: center;">
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="btn-cancel-assign">Cancel</button>
-                <button class="btn btn-primary" id="btn-confirm-assign" style="background-color: var(--success); border-color: var(--success); color: white;">Confirm & Lock</button>
+                <button class="btn btn-primary" id="btn-confirm-assign" style="background-color: #ef4444; border-color: #ef4444; color: white;">Confirm Quote</button>
             </div>
         </div>
     </div>
+
+            <!-- Modal 3: Verify Assignment -->
+        <div class="modal-overlay" id="verification-modal">
+            <div class="modal-card">
+                <div class="modal-icon" style="background-color: #ecfdf5; color: #10b981;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+                </div>
+                <h3>Verify Assignment</h3>
+                <p id="verification-msg" style="margin-bottom: 24px;">The quote is going to be assigned to "FULL NAME".</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="btn-verify-cancel">Cancel</button>
+                    <button class="btn btn-primary" id="btn-verify-confirm" style="background-color: #10b981; border-color: #10b981; color: white;">Confirm & Finalize</button>
+                </div>
+            </div>
+        </div>
 
     <!-- Toast -->
     <div class="toast" id="toast">
